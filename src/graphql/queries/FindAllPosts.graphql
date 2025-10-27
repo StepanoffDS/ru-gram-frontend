@@ -1,0 +1,18 @@
+query FindAllPosts($filter: FilterPostsInput!) {
+  findAllPosts(filter: $filter) {
+    id
+    title
+    text
+    images
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+    isLiked
+    likes
+  }
+}

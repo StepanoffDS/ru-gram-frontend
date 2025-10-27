@@ -1,0 +1,202 @@
+{
+  "home": {
+    "title": "Главная страница"
+  },
+  "auth": {
+    "register": {
+      "heading": "Регистрация",
+      "backButtonLabel": "Есть аккаунт? Войти",
+      "usernameLabel": "Имя пользователя",
+      "usernameTooltip": {
+        "title": "Правила для имени пользователя",
+        "rules": [
+          "От 3 до 20 символов",
+          "Только латинские буквы (a-z, A-Z)",
+          "Цифры (0-9)",
+          "Символы: дефис (-) и подчеркивание (_)"
+        ]
+      },
+      "passwordLabel": "Пароль",
+      "submitButton": "Зарегистрироваться",
+      "successMessage": "Успешная регистрация",
+      "errorMessage": "Не удалось зарегистрироваться"
+    },
+    "login": {
+      "heading": "Вход",
+      "backButtonLabel": "Нет аккаунта? Зарегистрироваться",
+      "loginLabel": "Логин",
+      "loginTooltip": {
+        "title": "Имя пользователя или email"
+      },
+      "passwordLabel": "Пароль",
+      "submitButton": "Войти",
+      "successMessage": "Успешный вход",
+      "errorMessage": "Не удалось войти"
+    },
+    "authWarning": {
+      "title": "Необходимо авторизоваться",
+      "description": "Вы не авторизованы. Пожалуйста, авторизуйтесь для продолжения.",
+      "cancelButton": "Отмена",
+      "noAccount": "Нет аккаунта?",
+      "registerButton": "Зарегистрироваться"
+    }
+  },
+  "sidebar": {
+    "logout": {
+      "successMessage": "Вы успешно вышли из аккаунта",
+      "errorMessage": "Не удалось выйти из аккаунта"
+    },
+    "menu": {
+      "createPost": "Создать",
+      "home": "Главная",
+      "profile": "Мой профиль",
+      "search": "Поиск",
+      "other": "Другое",
+      "logout": "Выйти",
+      "loadingLogout": "Выход..."
+    }
+  },
+  "themeToggleSwitch": {
+    "ariaLabel": "Переключить тему",
+    "theme": "Темная тема"
+  },
+  "createPostModal": {
+    "title": "Создать пост",
+    "titleLabel": "Заголовок",
+    "textLabel": "Текст",
+    "imagesLabel": "Изображения",
+    "submitButton": "Создать",
+    "cancelButton": "Отмена",
+    "loading": "Создание...",
+    "successMessage": "Пост успешно создан",
+    "errorMessage": "Не удалось создать пост",
+    "uploadProgress": "Загрузка изображения {index} из {total}"
+  },
+  "postDropdown": {
+    "edit": "Редактировать",
+    "hide": "Скрыть",
+    "show": "Показать",
+    "delete": "Удалить"
+  },
+  "editPostModal": {
+    "title": "Обновить пост",
+    "titleLabel": "Заголовок",
+    "textLabel": "Текст",
+    "imagesLabel": "Изображения",
+    "submitButton": "Обновить",
+    "cancelButton": "Отмена",
+    "loading": "Обновление...",
+    "successMessage": "Пост успешно обновлен",
+    "deleteImageSuccessMessage": "Изображение успешно удалено",
+    "deleteImageErrorMessage": "Не удалось удалить изображение",
+    "errorMessage": "Не удалось обновить пост",
+    "uploadProgress": "Загрузка изображения {index} из {total}",
+    "imagesDescription": "Добавьте или удалите изображения к посту"
+  },
+  "searchTabs": {
+    "title": "Поиск",
+    "placeholder": "Поиск по постам и пользователям...",
+    "posts": "Посты",
+    "users": "Пользователи",
+    "loadingPosts": "Поиск постов...",
+    "emptySearchStatePosts": "Введите поисковый запрос для поиска постов",
+    "emptySearchStateUsers": "Введите поисковый запрос для поиска пользователей",
+    "errorLoadingPosts": "Ошибка загрузки постов",
+    "allPostsLoaded": "Все посты загружены",
+    "loadingUsers": "Поиск пользователей...",
+    "errorLoadingUsers": "Ошибка загрузки пользователей",
+    "usersNotFound": "Пользователи не найдены"
+  },
+  "userCard": {
+    "registered": "Зарегистрирован"
+  },
+  "pageHeader": {
+    "backButtonLabel": "Назад"
+  },
+  "formatTimeAgo": {
+    "justNow": "Только что",
+    "minuteAgo1": "Минуту назад",
+    "minuteAgo2to4": "{count} минуты назад",
+    "minuteAgo5plus": "{count} минут назад",
+    "hourAgo1": "Час назад",
+    "hourAgo2to4": "{count} часа назад",
+    "hourAgo5plus": "{count} часов назад",
+    "dayAgo1": "Вчера",
+    "dayAgo2to4": "{count} дня назад",
+    "dayAgo5plus": "{count} дней назад"
+  },
+  "hidePost": {
+    "showPost": "Показать пост",
+    "hidePost": "Скрыть пост",
+    "showPostDescription": "Вы уверены, что хотите показать данный пост? Этот пост будет показан в ленты других пользователей.",
+    "hidePostDescription": "Вы уверены, что хотите скрыть данный пост? Этот пост будет скрыт из ленты других пользователей.",
+    "showPostButton": "Показать",
+    "hidePostButton": "Скрыть",
+    "cancelButton": "Отмена",
+    "loading": "Скрытие...",
+    "successShowPost": "Пост успешно показан",
+    "successHidePost": "Пост успешно скрыт",
+    "errorShowPost": "Не удалось показать пост",
+    "errorHidePost": "Не удалось скрыть пост",
+    "loadingShowPost": "Показ...",
+    "loadingHidePost": "Скрытие..."
+  },
+  "deletePost": {
+    "title": "Удаление поста",
+    "description": "Вы уверены, что хотите удалить данный пост? Данная функция безвозвратна.",
+    "submitButton": "Удалить",
+    "cancelButton": "Отмена",
+    "loading": "Удаление...",
+    "successMessage": "Пост успешно удален",
+    "errorMessage": "Не удалось удалить пост"
+  },
+  "avatarUpload": {
+    "title": "Загрузка аватара",
+    "successMessage": "Аватар успешно обновлен",
+    "errorMessage": "Не удалось загрузить аватар",
+    "fileSizeError": "Размер файла не должен превышать 5MB",
+    "fileTypeError": "Неверный тип файла",
+    "selectImage": "Выберите изображение",
+    "successRemoveAvatar": "Аватар успешно удален",
+    "errorRemoveAvatar": "Не удалось удалить аватар",
+    "loading": "Загрузка...",
+    "preview": "Предпросмотр",
+    "jpgPngDescription": "JPG, PNG до 5MB"
+  },
+  "profileEdit": {
+    "title": "Редактировать профиль",
+    "nameLabel": "Имя",
+    "usernameLabel": "Имя пользователя",
+    "usernamePlaceholder": "Введите имя пользователя",
+    "bioLabel": "Биография",
+    "submitButton": "Сохранить",
+    "cancelButton": "Отмена",
+    "loading": "Сохранение...",
+    "successMessage": "Профиль успешно сохранен",
+    "errorMessage": "Не удалось сохранить профиль",
+    "errorLoadingProfile": "Не удалось загрузить информацию о профиле",
+    "successUpdateProfile": "Профиль успешно обновлен",
+    "errorUpdateProfile": "Не удалось обновить профиль",
+    "avatarLabel": "Аватар",
+    "namePlaceholder": "Введите ваше имя",
+    "bioPlaceholder": "Расскажите о себе..."
+  },
+  "profileInfo": {
+    "errorLoadingProfile": "Не удалось загрузить информацию о профиле"
+  },
+  "imageWindow": {
+    "closeButton": "Закрыть"
+  },
+  "searchLoadingIndicator": {
+    "loading": "Поиск..."
+  },
+  "passwordInput": {
+    "hidePassword": "Скрыть пароль",
+    "showPassword": "Показать пароль"
+  },
+  "updatePostFooter": {
+    "cancelButton": "Отмена",
+    "submitButton": "Обновить",
+    "loading": "Обновление..."
+  }
+}

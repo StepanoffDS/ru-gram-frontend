@@ -1,0 +1,199 @@
+{
+  "home": {
+    "title": "Home page"
+  },
+  "auth": {
+    "register": {
+      "heading": "Registration",
+      "backButtonLabel": "Have an account? Login",
+      "usernameLabel": "Username",
+      "usernameTooltip": {
+        "title": "Rules for username",
+        "rules": [
+          "From 3 to 20 characters",
+          "Only Latin letters (a-z, A-Z)",
+          "Numbers (0-9)",
+          "Symbols: dash (-) and underscore (_)"
+        ]
+      },
+      "passwordLabel": "Password",
+      "submitButton": "Register",
+      "successMessage": "Success registration",
+      "errorMessage": "Failed to register"
+    },
+    "login": {
+      "heading": "Login to your account",
+      "backButtonLabel": "No account? Register",
+      "loginLabel": "Login",
+      "loginTooltip": {
+        "title": "Username or email"
+      },
+      "passwordLabel": "Password",
+      "submitButton": "Login",
+      "successMessage": "Success login",
+      "errorMessage": "Failed to login"
+    },
+    "authWarning": {
+      "title": "You need to login",
+      "description": "You are not logged in. Please login to continue.",
+      "cancelButton": "Cancel",
+      "noAccount": "No account?",
+      "registerButton": "Register"
+    }
+  },
+  "sidebar": {
+    "logout": {
+      "successMessage": "Success logout",
+      "errorMessage": "Failed to logout"
+    },
+    "menu": {
+      "createPost": "Create",
+      "home": "Home",
+      "profile": "My profile",
+      "search": "Search",
+      "other": "Other",
+      "logout": "Logout",
+      "loadingLogout": "Logout..."
+    }
+  },
+  "themeToggleSwitch": {
+    "ariaLabel": "Toggle theme",
+    "theme": "Dark theme"
+  },
+  "createPostModal": {
+    "title": "Create post",
+    "titleLabel": "Title",
+    "textLabel": "Text",
+    "imagesLabel": "Images",
+    "submitButton": "Create",
+    "cancelButton": "Cancel",
+    "loading": "Creating..."
+  },
+  "postDropdown": {
+    "edit": "Edit",
+    "hide": "Hide",
+    "show": "Show",
+    "delete": "Delete"
+  },
+  "editPostModal": {
+    "title": "Update post",
+    "titleLabel": "Title",
+    "textLabel": "Text",
+    "imagesLabel": "Images",
+    "submitButton": "Update",
+    "cancelButton": "Cancel",
+    "loading": "Updating...",
+    "successMessage": "Post successfully updated",
+    "deleteImageSuccessMessage": "Image successfully deleted",
+    "deleteImageErrorMessage": "Failed to delete image",
+    "errorMessage": "Failed to update post",
+    "uploadProgress": "Uploading image {index} of {total}",
+    "imagesDescription": "Add or delete images to the post"
+  },
+  "searchTabs": {
+    "title": "Search",
+    "placeholder": "Search for posts and users...",
+    "posts": "Posts",
+    "users": "Users",
+    "loadingPosts": "Searching for posts...",
+    "emptySearchStatePosts": "Enter a search query to search for posts",
+    "emptySearchStateUsers": "Enter a search query to search for users",
+    "errorLoadingPosts": "Error loading posts",
+    "allPostsLoaded": "All posts loaded",
+    "loadingUsers": "Searching for users...",
+    "errorLoadingUsers": "Error loading users",
+    "usersNotFound": "Users not found"
+  },
+  "userCard": {
+    "registered": "Registered"
+  },
+  "pageHeader": {
+    "backButtonLabel": "Back"
+  },
+  "formatTimeAgo": {
+    "justNow": "Just now",
+    "minuteAgo1": "A minute ago",
+    "minuteAgo2to4": "{count} minutes ago",
+    "minuteAgo5plus": "{count} minutes ago",
+    "hourAgo1": "An hour ago",
+    "hourAgo2to4": "{count} hours ago",
+    "hourAgo5plus": "{count} hours ago",
+    "dayAgo1": "Yesterday",
+    "dayAgo2to4": "{count} days ago",
+    "dayAgo5plus": "{count} days ago"
+  },
+  "hidePost": {
+    "showPost": "Show post",
+    "hidePost": "Hide post",
+    "showPostDescription": "Are you sure you want to show this post? This post will be shown in the feeds of other users.",
+    "hidePostDescription": "Are you sure you want to hide this post? This post will be hidden from the feeds of other users.",
+    "showPostButton": "Show",
+    "hidePostButton": "Hide",
+    "cancelButton": "Cancel",
+    "loading": "Hiding...",
+    "successShowPost": "Post successfully shown",
+    "successHidePost": "Post successfully hidden",
+    "errorShowPost": "Failed to show post",
+    "errorHidePost": "Failed to hide post",
+    "loadingShowPost": "Showing...",
+    "loadingHidePost": "Hiding..."
+  },
+  "deletePost": {
+    "title": "Delete post",
+    "description": "Are you sure you want to delete this post? This action is irreversible.",
+    "submitButton": "Delete",
+    "cancelButton": "Cancel",
+    "loading": "Deleting...",
+    "successMessage": "Post successfully deleted",
+    "errorMessage": "Failed to delete post"
+  },
+  "avatarUpload": {
+    "title": "Avatar upload",
+    "successMessage": "Avatar successfully updated",
+    "errorMessage": "Failed to upload avatar",
+    "fileSizeError": "File size must be less than 5MB",
+    "fileTypeError": "Invalid file type",
+    "selectImage": "Select image",
+    "successRemoveAvatar": "Avatar successfully removed",
+    "errorRemoveAvatar": "Failed to remove avatar",
+    "loading": "Uploading...",
+    "preview": "Preview",
+    "jpgPngDescription": "JPG, PNG up to 5MB"
+  },
+  "profileEdit": {
+    "title": "Edit profile",
+    "nameLabel": "Name",
+    "usernameLabel": "Username",
+    "bioLabel": "Bio",
+    "submitButton": "Save",
+    "cancelButton": "Cancel",
+    "loading": "Saving...",
+    "successMessage": "Profile successfully saved",
+    "errorMessage": "Failed to save profile",
+    "errorLoadingProfile": "Failed to load profile information",
+    "successUpdateProfile": "Profile successfully updated",
+    "errorUpdateProfile": "Failed to update profile",
+    "avatarLabel": "Avatar",
+    "namePlaceholder": "Enter your name",
+    "usernamePlaceholder": "Enter your username",
+    "bioPlaceholder": "Tell us about yourself..."
+  },
+  "profileInfo": {
+    "errorLoadingProfile": "Failed to load profile information"
+  },
+  "imageWindow": {
+    "closeButton": "Close"
+  },
+  "searchLoadingIndicator": {
+    "loading": "Searching..."
+  },
+  "passwordInput": {
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
+  },
+  "updatePostFooter": {
+    "cancelButton": "Cancel",
+    "submitButton": "Update",
+    "loading": "Updating..."
+  }
+}
