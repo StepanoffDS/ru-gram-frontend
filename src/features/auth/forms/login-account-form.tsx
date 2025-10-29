@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HelpCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -35,7 +33,6 @@ export function LoginAccountForm({
   cancelButton?: React.ReactNode;
 }) {
   const t = useTranslations('auth.login');
-  const router = useRouter();
   const { auth, setRole, setUserId } = useAuth();
   const form = useForm<LoginAccountSchema>({
     resolver: zodResolver(loginAccountSchema),
@@ -52,7 +49,7 @@ export function LoginAccountForm({
       setRole(data.loginUser.role as Role);
       setUserId(data.loginUser.id);
       toast.success(t('successMessage'));
-      router.push('/');
+      globalThis.location.href = '/';
     },
     onError: () => {
       toast.error(t('errorMessage'));
