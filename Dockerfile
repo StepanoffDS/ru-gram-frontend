@@ -8,9 +8,9 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN yarn graphql-codegen --config graphql.config.ts
+RUN NODE_TLS_REJECT_UNAUTHORIZED=0 yarn graphql-codegen --config graphql.config.ts
 
-RUN yarn build
+RUN NODE_TLS_REJECT_UNAUTHORIZED=0 yarn build
 
 EXPOSE 3000
 
