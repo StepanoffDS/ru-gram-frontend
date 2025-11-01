@@ -63,7 +63,10 @@ export function CreateAccountForm() {
       backButtonHref='/login'
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          autoComplete='on'
+        >
           <FormWrapper>
             <FieldWrapper
               label='Email'
@@ -75,9 +78,12 @@ export function CreateAccountForm() {
                 render={({ field }) => (
                   <Input
                     {...field}
+                    id='email'
+                    name='email'
                     value={field.value || ''}
                     placeholder='example@gmail.com'
                     disabled={isLoadingCreate}
+                    autoComplete='email'
                   />
                 )}
               />
@@ -116,9 +122,12 @@ export function CreateAccountForm() {
                 render={({ field }) => (
                   <Input
                     {...field}
+                    id='username'
+                    name='username'
                     value={field.value || ''}
                     placeholder='john_doe'
                     disabled={isLoadingCreate}
+                    autoComplete='username'
                   />
                 )}
               />
@@ -134,9 +143,12 @@ export function CreateAccountForm() {
                 render={({ field }) => (
                   <PasswordInput
                     {...field}
+                    id='password'
+                    name='password'
                     value={field.value || ''}
                     placeholder='********'
                     disabled={isLoadingCreate}
+                    autoComplete='new-password'
                   />
                 )}
               />

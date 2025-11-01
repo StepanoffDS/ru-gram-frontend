@@ -13,7 +13,6 @@ query FindAllByUsername($filter: FilterPostsInput!, $username: String!) {
       username
       name
       avatar
-      bio
       role
     }
   }

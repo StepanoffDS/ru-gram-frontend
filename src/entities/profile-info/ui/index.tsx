@@ -6,7 +6,7 @@ import { PencilIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Role } from '@/features/auth/types';
-import { FindMeQuery } from '@/graphql/generated/output';
+import { FindMeQuery, UserModel } from '@/graphql/generated/output';
 import {
   Avatar,
   AvatarFallback,
@@ -21,19 +21,25 @@ import { getInitials } from '@/shared/utils/get-initials';
 import { copyProfileLink } from '../utils';
 
 interface ProfileInfoProps {
-  profile: Nullable<FindMeQuery['findMe']>;
+  profile: Nullable<UserModel>;
   loading: boolean;
   error: Nullable<Error>;
+  isMe?: boolean;
 }
 
-export function ProfileInfo({ profile, loading, error }: ProfileInfoProps) {
+export function ProfileInfo({
+  profile,
+  loading,
+  error,
+  isMe,
+}: ProfileInfoProps) {
   const t = useTranslations('profileInfo');
 
   if (loading) {
     return (
       <div className='border-b border-gray-200 dark:border-gray-800'>
         <div className='mx-auto max-w-4xl pb-4'>
-          <div className='flex items-center space-x-6'>
+          <div className='flex space-x-6'>
             <Skeleton className='h-24 w-24 rounded-full' />
             <div className='space-y-3'>
               <Skeleton className='h-8 w-full max-w-48' />
@@ -58,13 +64,13 @@ export function ProfileInfo({ profile, loading, error }: ProfileInfoProps) {
     );
   }
 
-  const displayName = profile.name || profile.username;
+  const displayName = profile?.name || profile.username;
 
   return (
     <div className='border-b border-gray-200 dark:border-gray-800'>
       <div className='mx-auto max-w-4xl pb-4'>
         <div className='flex justify-between'>
-          <div className='flex items-center space-x-6'>
+          <div className='flex space-x-6'>
             <div className='relative'>
               <Avatar className='h-24 w-24'>
                 {profile.avatar ? (
@@ -79,16 +85,18 @@ export function ProfileInfo({ profile, loading, error }: ProfileInfoProps) {
                   </AvatarFallback>
                 )}
               </Avatar>
-              <Button
-                variant='secondary'
-                className='absolute top-0 right-0 h-8 w-8 rounded-full'
-                size='sm'
-                asChild
-              >
-                <Link href='/profile/me/edit'>
-                  <PencilIcon className='h-4 w-4' />
-                </Link>
-              </Button>
+              {isMe && (
+                <Button
+                  variant='secondary'
+                  className='absolute top-0 right-0 h-8 w-8 rounded-full'
+                  size='sm'
+                  asChild
+                >
+                  <Link href='/profile/me/edit'>
+                    <PencilIcon className='h-4 w-4' />
+                  </Link>
+                </Button>
+              )}
             </div>
 
             <div className='min-w-0 flex-1'>

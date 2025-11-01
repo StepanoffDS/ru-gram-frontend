@@ -5,7 +5,7 @@ export const loginAccountSchema = z.object({
     .string()
     .min(3)
     .max(20)
-    .regex(/^[a-zA-Z0-9_-]+$/)
+    .regex(/^[a-zA-Z0-9_.-]+$/)
     .or(z.email()),
   password: z.string().min(8),
 });

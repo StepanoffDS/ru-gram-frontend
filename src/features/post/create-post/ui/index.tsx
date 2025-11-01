@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 
+import { useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -57,7 +58,11 @@ interface CreatePostProps {
 export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
   const { isAuthenticated } = useAuth();
   const t = useTranslations('createPostModal');
-  const [createPost, { loading: createLoading }] = useCreatePostMutation();
+  const apolloClient = useApolloClient();
+  const [createPost, { loading: createLoading }] = useCreatePostMutation({
+    refetchQueries: ['findAllPosts', 'FindAllByMe'],
+    awaitRefetchQueries: true,
+  });
   const [uploadLoading, setUploadLoading] = useState(false);
   const form = useForm<CreatePostSchema>({
     resolver: zodResolver(createPostSchema),
@@ -83,7 +88,7 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
             text: data.text,
           },
         },
-        refetchQueries: ['findAllPosts'],
+        refetchQueries: ['findAllPosts', 'FindAllByMe'],
         awaitRefetchQueries: true,
       });
 
@@ -101,6 +106,10 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
 
           await addImageToPost(postId, imageFiles[i]);
         }
+
+        await apolloClient.refetchQueries({
+          include: ['findAllPosts', 'FindAllByMe'],
+        });
       }
 
       toast.success(t('successMessage'));
@@ -166,10 +175,18 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
                 label={t('textLabel')}
                 name='text'
               >
-                <Textarea
-                  {...form.register('text')}
-                  placeholder={t('textLabel')}
-                />
+                <div className='space-y-2'>
+                  <Textarea
+                    {...form.register('text')}
+                    placeholder={t('textLabel')}
+                    maxLength={1500}
+                  />
+                  <div className='flex justify-end'>
+                    <span className='text-muted-foreground text-xs'>
+                      {(form.watch('text') || '').length} / 1500
+                    </span>
+                  </div>
+                </div>
               </FieldWrapper>
 
               <FormField
@@ -181,8 +198,8 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
                     <FormControl>
                       <div className='custom-scrollbar flex gap-2 overflow-x-auto pb-2'>
                         <label
-                          htmlFor={t('imagesLabel')}
-                          className='flex aspect-square h-32 w-32 flex-shrink-0 items-center justify-center rounded-md border border-dashed border-gray-300'
+                          htmlFor='images'
+                          className='flex aspect-square h-32 w-32 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border border-dashed border-gray-300 transition-opacity hover:opacity-70'
                         >
                           <Input
                             type='file'

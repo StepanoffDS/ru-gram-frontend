@@ -12,7 +12,10 @@ const ACCEPTED_IMAGE_TYPES = new Set([
 export const createPostSchema = z
   .object({
     title: z.string().optional(),
-    text: z.string().optional(),
+    text: z
+      .string()
+      .max(1500, 'Текст не может превышать 1500 символов')
+      .optional(),
     images: z
       .custom<FileList>()
       .optional()

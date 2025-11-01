@@ -22,7 +22,12 @@ export function SearchTabs() {
   return (
     <div className='mx-auto max-w-4xl'>
       <div className='mb-6'>
-        <h1 className='mb-4 text-2xl font-bold'>{t('title')}</h1>
+        <h1
+          className='mb-4 text-2xl font-bold'
+          data-heading-tag='H1'
+        >
+          {t('title')}
+        </h1>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}

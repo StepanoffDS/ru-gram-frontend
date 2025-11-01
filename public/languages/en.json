@@ -2,6 +2,12 @@
   "home": {
     "title": "Home page"
   },
+  "profilePostsList": {
+    "noPosts": "No posts"
+  },
+  "profile": {
+    "noProfile": "Profile not found"
+  },
   "auth": {
     "register": {
       "heading": "Registration",
@@ -13,7 +19,7 @@
           "From 3 to 20 characters",
           "Only Latin letters (a-z, A-Z)",
           "Numbers (0-9)",
-          "Symbols: dash (-) and underscore (_)"
+          "Symbols: dash (-) and underscore (_) and dot (.)"
         ]
       },
       "passwordLabel": "Password",
@@ -176,7 +182,21 @@
     "avatarLabel": "Avatar",
     "namePlaceholder": "Enter your name",
     "usernamePlaceholder": "Enter your username",
-    "bioPlaceholder": "Tell us about yourself..."
+    "bioPlaceholder": "Tell us about yourself...",
+    "dangerZone": {
+      "title": "Danger zone",
+      "description": "Are you sure you want to delete your profile? All your posts, comments and data will be permanently deleted. This action cannot be undone.",
+      "deleteButton": "Delete profile"
+    }
+  },
+  "deleteProfile": {
+    "title": "Delete profile",
+    "description": "Are you sure you want to delete your profile? All your posts, comments and data will be permanently deleted. This action cannot be undone.",
+    "submitButton": "Delete profile",
+    "cancelButton": "Cancel",
+    "loading": "Deleting...",
+    "successMessage": "Profile successfully deleted",
+    "errorMessage": "Failed to delete profile"
   },
   "profileInfo": {
     "errorLoadingProfile": "Failed to load profile information"

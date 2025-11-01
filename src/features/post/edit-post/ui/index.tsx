@@ -174,10 +174,18 @@ export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
                 label={t('textLabel')}
                 name='text'
               >
-                <Textarea
-                  {...form.register('text')}
-                  placeholder={t('textLabel')}
-                />
+                <div className='space-y-2'>
+                  <Textarea
+                    {...form.register('text')}
+                    placeholder={t('textLabel')}
+                    maxLength={1500}
+                  />
+                  <div className='flex justify-end'>
+                    <span className='text-muted-foreground text-xs'>
+                      {(form.watch('text') || '').length} / 1500
+                    </span>
+                  </div>
+                </div>
               </FieldWrapper>
 
               <div className='space-y-2'>
@@ -186,8 +194,8 @@ export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
                 </label>
                 <div className='custom-scrollbar flex gap-2 overflow-x-auto pb-2'>
                   <label
-                    htmlFor={t('imagesLabel')}
-                    className='flex aspect-square h-32 w-32 flex-shrink-0 items-center justify-center rounded-md border border-dashed border-gray-300'
+                    htmlFor='images'
+                    className='flex aspect-square h-32 w-32 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border border-dashed border-gray-300 transition-opacity hover:opacity-70'
                   >
                     <Input
                       type='file'

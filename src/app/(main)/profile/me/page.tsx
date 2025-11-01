@@ -8,6 +8,7 @@ import { ProfilePostsList } from '@/entities/profile-posts-list';
 import {
   useFindAllByMeQuery,
   useFindMeQuery,
+  UserModel,
 } from '@/graphql/generated/output';
 import {
   POSTS_PER_PAGE,
@@ -78,14 +79,13 @@ export default function ProfileMePage() {
     }
   }, [inView, hasMore, postsLoading, currentSkip, posts, fetchMorePosts]);
 
-  console.log('meData?.findMe =>', meData?.findMe);
-
   return (
     <div className='flex flex-col gap-4'>
       <ProfileInfo
-        profile={meData?.findMe}
+        profile={meData?.findMe as UserModel}
         loading={meLoading}
         error={meError}
+        isMe={true}
       />
       <ProfilePostsList
         posts={posts}

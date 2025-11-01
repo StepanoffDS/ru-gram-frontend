@@ -26,6 +26,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 
 import { AvatarUpload } from './avatar-upload';
+import { DeleteProfile } from './delete-profile';
 
 const profileEditSchema = z.object({
   name: z.string().min(1, 'Имя обязательно').max(50, 'Имя слишком длинное'),
@@ -34,10 +35,10 @@ const profileEditSchema = z.object({
     .min(3, 'Имя пользователя должно содержать минимум 3 символа')
     .max(30, 'Имя пользователя слишком длинное')
     .regex(
-      /^[a-zA-Z0-9_]+$/,
-      'Имя пользователя может содержать только буквы, цифры и подчеркивания',
+      /^[a-zA-Z0-9_.-]+$/,
+      'Имя пользователя может содержать только буквы, цифры, точку, дефис и подчеркивания',
     ),
-  bio: z.string().max(160, 'Биография слишком длинная').optional(),
+  bio: z.string().max(300, 'Биография слишком длинная').optional(),
 });
 
 type ProfileEditFormData = z.infer<typeof profileEditSchema>;
@@ -50,6 +51,7 @@ export function ProfileEdit({ profile }: ProfileEditFormProps) {
   const router = useRouter();
   const t = useTranslations('profileEdit');
   const [currentAvatar, setCurrentAvatar] = useState(profile.avatar);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const form = useForm<ProfileEditFormData>({
     resolver: zodResolver(profileEditSchema),
@@ -61,7 +63,10 @@ export function ProfileEdit({ profile }: ProfileEditFormProps) {
   });
 
   const [changeProfileInfo, { loading: changeProfileLoading }] =
-    useChangeProfileInfoMutation();
+    useChangeProfileInfoMutation({
+      refetchQueries: ['FindMe', 'FindAllByMe'],
+      awaitRefetchQueries: true,
+    });
 
   const onSubmit = async (data: ProfileEditFormData) => {
     try {
@@ -73,6 +78,8 @@ export function ProfileEdit({ profile }: ProfileEditFormProps) {
             bio: data.bio || '',
           },
         },
+        refetchQueries: ['FindMe', 'FindAllByMe'],
+        awaitRefetchQueries: true,
       });
 
       toast.success(t('successUpdateProfile'));
@@ -137,19 +144,35 @@ export function ProfileEdit({ profile }: ProfileEditFormProps) {
         <FormField
           control={form.control}
           name='bio'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('bioLabel')}</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder={t('bioPlaceholder')}
-                  className='min-h-[100px]'
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const bioLength = field.value?.length || 0;
+            const maxLength = 300;
+            return (
+              <FormItem>
+                <div className='flex items-center justify-between'>
+                  <FormLabel>{t('bioLabel')}</FormLabel>
+                  <span
+                    className={`text-xs ${
+                      bioLength > maxLength
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {bioLength}/{maxLength}
+                  </span>
+                </div>
+                <FormControl>
+                  <Textarea
+                    placeholder={t('bioPlaceholder')}
+                    className='min-h-[100px]'
+                    maxLength={maxLength}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <div className='flex justify-end space-x-4'>
@@ -169,6 +192,32 @@ export function ProfileEdit({ profile }: ProfileEditFormProps) {
           </Button>
         </div>
       </form>
+
+      <div className='mt-8 border-t pt-6'>
+        <div className='flex flex-col gap-4'>
+          <div>
+            <h3 className='text-destructive text-lg font-semibold'>
+              {t('dangerZone.title')}
+            </h3>
+            <p className='text-muted-foreground text-sm'>
+              {t('dangerZone.description')}
+            </p>
+          </div>
+          <Button
+            type='button'
+            variant='destructive'
+            onClick={() => setIsDeleteDialogOpen(true)}
+            disabled={isLoading}
+          >
+            {t('dangerZone.deleteButton')}
+          </Button>
+        </div>
+      </div>
+
+      <DeleteProfile
+        isOpen={isDeleteDialogOpen}
+        setIsOpen={setIsDeleteDialogOpen}
+      />
     </Form>
   );
 }

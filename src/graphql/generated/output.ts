@@ -99,6 +99,7 @@ export type Mutation = {
   createPost: PostModel;
   createUser: Scalars['Boolean']['output'];
   deletePost: Scalars['Boolean']['output'];
+  deleteProfile: Scalars['Boolean']['output'];
   loginUser: UserModel;
   logoutUser: Scalars['String']['output'];
   toggleHidePost: PostModel;
@@ -207,6 +208,7 @@ export type Query = {
   findAllUsers: Array<UserModel>;
   findMe: UserModel;
   findOneById: PostModel;
+  findOneByUsername: UserModel;
   getLikedUsersByPost: PaginatedLikedUsersModel;
 };
 
@@ -242,6 +244,11 @@ export type QueryFindOneByIdArgs = {
 };
 
 
+export type QueryFindOneByUsernameArgs = {
+  username: Scalars['String']['input'];
+};
+
+
 export type QueryGetLikedUsersByPostArgs = {
   pagination?: LikesPaginationInput;
   postId: Scalars['String']['input'];
@@ -259,6 +266,7 @@ export type UserModel = {
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isMe: Scalars['Boolean']['output'];
   name?: Maybe<Scalars['String']['output']>;
   password: Scalars['String']['output'];
   postLikes: Array<PostLikesModel>;
@@ -330,6 +338,11 @@ export type ChangeProfileInfoMutationVariables = Exact<{
 
 export type ChangeProfileInfoMutation = { __typename?: 'Mutation', changeProfileInfo: boolean };
 
+export type DeleteProfileMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeleteProfileMutation = { __typename?: 'Mutation', deleteProfile: boolean };
+
 export type FindAllByMeQueryVariables = Exact<{
   filter: FilterPostsInput;
 }>;
@@ -350,7 +363,7 @@ export type FindAllByUsernameQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string } }> };
+export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } }> };
 
 export type FindAllPostsQueryVariables = Exact<{
   filter: FilterPostsInput;
@@ -370,6 +383,13 @@ export type FindMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type FindMeQuery = { __typename?: 'Query', findMe: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string } };
+
+export type FindOneByUsernameQueryVariables = Exact<{
+  username: Scalars['String']['input'];
+}>;
+
+
+export type FindOneByUsernameQuery = { __typename?: 'Query', findOneByUsername: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string, isMe: boolean } };
 
 
 export const CreateUserDocument = gql`
@@ -687,6 +707,36 @@ export function useChangeProfileInfoMutation(baseOptions?: Apollo.MutationHookOp
 export type ChangeProfileInfoMutationHookResult = ReturnType<typeof useChangeProfileInfoMutation>;
 export type ChangeProfileInfoMutationResult = Apollo.MutationResult<ChangeProfileInfoMutation>;
 export type ChangeProfileInfoMutationOptions = Apollo.BaseMutationOptions<ChangeProfileInfoMutation, ChangeProfileInfoMutationVariables>;
+export const DeleteProfileDocument = gql`
+    mutation DeleteProfile {
+  deleteProfile
+}
+    `;
+export type DeleteProfileMutationFn = Apollo.MutationFunction<DeleteProfileMutation, DeleteProfileMutationVariables>;
+
+/**
+ * __useDeleteProfileMutation__
+ *
+ * To run a mutation, you first call `useDeleteProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProfileMutation, { data, loading, error }] = useDeleteProfileMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeleteProfileMutation(baseOptions?: Apollo.MutationHookOptions<DeleteProfileMutation, DeleteProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteProfileMutation, DeleteProfileMutationVariables>(DeleteProfileDocument, options);
+      }
+export type DeleteProfileMutationHookResult = ReturnType<typeof useDeleteProfileMutation>;
+export type DeleteProfileMutationResult = Apollo.MutationResult<DeleteProfileMutation>;
+export type DeleteProfileMutationOptions = Apollo.BaseMutationOptions<DeleteProfileMutation, DeleteProfileMutationVariables>;
 export const FindAllByMeDocument = gql`
     query FindAllByMe($filter: FilterPostsInput!) {
   findAllByMe(filter: $filter) {
@@ -809,7 +859,6 @@ export const FindAllByUsernameDocument = gql`
       username
       name
       avatar
-      bio
       role
     }
   }
@@ -994,3 +1043,49 @@ export type FindMeQueryHookResult = ReturnType<typeof useFindMeQuery>;
 export type FindMeLazyQueryHookResult = ReturnType<typeof useFindMeLazyQuery>;
 export type FindMeSuspenseQueryHookResult = ReturnType<typeof useFindMeSuspenseQuery>;
 export type FindMeQueryResult = Apollo.QueryResult<FindMeQuery, FindMeQueryVariables>;
+export const FindOneByUsernameDocument = gql`
+    query FindOneByUsername($username: String!) {
+  findOneByUsername(username: $username) {
+    id
+    username
+    name
+    avatar
+    bio
+    role
+    isMe
+  }
+}
+    `;
+
+/**
+ * __useFindOneByUsernameQuery__
+ *
+ * To run a query within a React component, call `useFindOneByUsernameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindOneByUsernameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindOneByUsernameQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useFindOneByUsernameQuery(baseOptions: Apollo.QueryHookOptions<FindOneByUsernameQuery, FindOneByUsernameQueryVariables> & ({ variables: FindOneByUsernameQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>(FindOneByUsernameDocument, options);
+      }
+export function useFindOneByUsernameLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>(FindOneByUsernameDocument, options);
+        }
+export function useFindOneByUsernameSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>(FindOneByUsernameDocument, options);
+        }
+export type FindOneByUsernameQueryHookResult = ReturnType<typeof useFindOneByUsernameQuery>;
+export type FindOneByUsernameLazyQueryHookResult = ReturnType<typeof useFindOneByUsernameLazyQuery>;
+export type FindOneByUsernameSuspenseQueryHookResult = ReturnType<typeof useFindOneByUsernameSuspenseQuery>;
+export type FindOneByUsernameQueryResult = Apollo.QueryResult<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>;

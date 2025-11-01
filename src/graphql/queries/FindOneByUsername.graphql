@@ -1,0 +1,11 @@
+query FindOneByUsername($username: String!) {
+  findOneByUsername(username: $username) {
+    id
+    username
+    name
+    avatar
+    bio
+    role
+    isMe
+  }
+}

@@ -62,7 +62,10 @@ export function LoginAccountForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        autoComplete='on'
+      >
         <FormWrapper>
           <FieldWrapper
             label={
@@ -90,9 +93,12 @@ export function LoginAccountForm({
               render={({ field }) => (
                 <Input
                   {...field}
+                  id='login'
+                  name='login'
                   value={field.value || ''}
                   placeholder='john_doe'
                   disabled={isLoadingLogin}
+                  autoComplete='username'
                 />
               )}
             />
@@ -108,9 +114,12 @@ export function LoginAccountForm({
               render={({ field }) => (
                 <PasswordInput
                   {...field}
+                  id='password'
+                  name='password'
                   value={field.value || ''}
                   placeholder='********'
                   disabled={isLoadingLogin}
+                  autoComplete='current-password'
                 />
               )}
             />

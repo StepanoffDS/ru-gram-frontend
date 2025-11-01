@@ -23,7 +23,7 @@ export function Post({ post }: PostProps) {
   const { formatTimeAgo } = useFormatTime();
   const { user } = post;
 
-  const displayName = user.name || user.username;
+  const displayName = user?.name || user.username;
 
   return (
     <article

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { RefObject, useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -7,6 +8,7 @@ import { ProfileInfo } from '@/entities/profile-info';
 import { ProfilePostsList } from '@/entities/profile-posts-list';
 import {
   useFindAllByUsernameQuery,
+  useFindOneByUsernameQuery,
   UserModel,
 } from '@/graphql/generated/output';
 import {
@@ -20,9 +22,18 @@ interface ProfilePageComponentProps {
 }
 
 export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
+  const t = useTranslations('profile');
   const [posts, setPosts] = useState<ListPost[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [currentSkip, setCurrentSkip] = useState(0);
+
+  const {
+    data: profileData,
+    loading: profileLoading,
+    error: profileError,
+  } = useFindOneByUsernameQuery({
+    variables: { username: username },
+  });
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -47,7 +58,7 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
 
   useEffect(() => {
     if (postsData?.findAllByUsername) {
-      setPosts(postsData?.findAllByUsername);
+      setPosts(postsData?.findAllByUsername as ListPost[]);
       setCurrentSkip(POSTS_PER_PAGE);
       setHasMore(postsData?.findAllByUsername?.length === POSTS_PER_PAGE);
     }
@@ -69,7 +80,7 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
           const newPosts = fetchMoreResult.findAllByUsername || [];
           const allPosts = [...(prev.findAllByUsername || []), ...newPosts];
 
-          setPosts(allPosts);
+          setPosts(allPosts as ListPost[]);
           setCurrentSkip(currentSkip + POSTS_PER_PAGE);
           setHasMore(newPosts.length === POSTS_PER_PAGE);
 
@@ -81,12 +92,17 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
     }
   }, [inView, hasMore, postsLoading, currentSkip, posts, fetchMorePosts]);
 
+  if (!profileData) {
+    return <div className='text-center text-gray-500'>{t('noProfile')}</div>;
+  }
+
   return (
     <div className='flex flex-col gap-4'>
       <ProfileInfo
-        profile={postsData?.findAllByUsername[0]?.user as Nullable<UserModel>}
-        loading={postsLoading}
-        error={postsError as Error}
+        profile={profileData?.findOneByUsername as Nullable<UserModel>}
+        loading={profileLoading}
+        error={profileError as Error}
+        isMe={profileData?.findOneByUsername?.isMe}
       />
       <ProfilePostsList
         posts={posts}
