@@ -1,6 +1,8 @@
 import Link from 'next/link';
 
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { LikePost } from '@/features/post/like-post';
+import { PostModel } from '@/graphql/generated/output';
 import {
   Avatar,
   AvatarFallback,
@@ -16,18 +18,22 @@ import { PostDropdown } from './post-dropdown-client';
 import { PostImage } from './post-image';
 
 interface PostProps {
-  post: ListPost;
+  post: ListPost | PostModel;
 }
 
 export function Post({ post }: PostProps) {
   const { formatTimeAgo } = useFormatTime();
   const { user } = post;
+  const { isAdmin } = useAuth();
 
   const displayName = user?.name || user.username;
 
   return (
     <article
-      className='flex flex-col gap-4 border-b pb-4'
+      className={cn(
+        'flex flex-col gap-4 border-b pb-4',
+        post.hidden && 'opacity-50 grayscale',
+      )}
       suppressHydrationWarning
     >
       <div className='flex items-center justify-between'>
@@ -62,7 +68,7 @@ export function Post({ post }: PostProps) {
             </span>
           </div>
         </div>
-        <PostDropdown post={post} />
+        {(isAdmin || post.isMyPost) && <PostDropdown post={post} />}
       </div>
 
       <div className='flex flex-col gap-2'>

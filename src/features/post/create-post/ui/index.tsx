@@ -60,7 +60,7 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
   const t = useTranslations('createPostModal');
   const apolloClient = useApolloClient();
   const [createPost, { loading: createLoading }] = useCreatePostMutation({
-    refetchQueries: ['findAllPosts', 'FindAllByMe'],
+    refetchQueries: ['FindAllPosts', 'FindAllByMe'],
     awaitRefetchQueries: true,
   });
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -88,7 +88,7 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
             text: data.text,
           },
         },
-        refetchQueries: ['findAllPosts', 'FindAllByMe'],
+        refetchQueries: ['FindAllPosts', 'FindAllByMe'],
         awaitRefetchQueries: true,
       });
 
@@ -108,7 +108,7 @@ export function CreatePost({ isOpen, setIsOpen }: CreatePostProps) {
         }
 
         await apolloClient.refetchQueries({
-          include: ['findAllPosts', 'FindAllByMe'],
+          include: ['FindAllPosts', 'FindAllByMe'],
         });
       }
 

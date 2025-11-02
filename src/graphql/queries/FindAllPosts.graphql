@@ -4,6 +4,7 @@ query FindAllPosts($filter: FilterPostsInput!) {
     title
     text
     images
+    hidden
     createdAt
     updatedAt
     user {
@@ -14,5 +15,6 @@ query FindAllPosts($filter: FilterPostsInput!) {
     }
     isLiked
     likes
+    isMyPost
   }
 }

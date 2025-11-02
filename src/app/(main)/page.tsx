@@ -29,15 +29,18 @@ export default function MainPage() {
         sortBy: PostSortOrder.NEWEST,
       },
     },
+    notifyOnNetworkStatusChange: true,
   });
 
   useEffect(() => {
     if (data?.findAllPosts) {
-      setPosts(data.findAllPosts);
-      setCurrentSkip(POSTS_PER_PAGE);
-      setHasMore(data.findAllPosts.length === POSTS_PER_PAGE);
+      if (posts.length === 0 || currentSkip === POSTS_PER_PAGE) {
+        setPosts(data.findAllPosts);
+        setCurrentSkip(POSTS_PER_PAGE);
+        setHasMore(data.findAllPosts.length === POSTS_PER_PAGE);
+      }
     }
-  }, [data]);
+  }, [data, currentSkip, posts.length]);
 
   useEffect(() => {
     if (inView && hasMore && !loading) {

@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
         <Link href='/'>
           <Image
             src={logo}
-            alt='ru-gram logo'
+            alt='rugram logo'
             width={64}
             height={64}
           />

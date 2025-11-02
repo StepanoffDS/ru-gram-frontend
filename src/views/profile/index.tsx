@@ -92,7 +92,7 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
     }
   }, [inView, hasMore, postsLoading, currentSkip, posts, fetchMorePosts]);
 
-  if (!profileData) {
+  if (!profileData && !profileLoading) {
     return <div className='text-center text-gray-500'>{t('noProfile')}</div>;
   }
 

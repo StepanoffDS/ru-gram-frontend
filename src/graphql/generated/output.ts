@@ -190,6 +190,7 @@ export type PostModel = {
   id: Scalars['ID']['output'];
   images?: Maybe<Array<Scalars['String']['output']>>;
   isLiked?: Maybe<Scalars['Boolean']['output']>;
+  isMyPost?: Maybe<Scalars['Boolean']['output']>;
   likes: Scalars['Int']['output'];
   postLikes: Array<PostLikesModel>;
   text?: Maybe<Scalars['String']['output']>;
@@ -348,7 +349,7 @@ export type FindAllByMeQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByMeQuery = { __typename?: 'Query', findAllByMe: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllByMeQuery = { __typename?: 'Query', findAllByMe: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type FindAllByMeHiddenQueryVariables = Exact<{
   filter: FilterPostsInput;
@@ -363,14 +364,14 @@ export type FindAllByUsernameQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } }> };
+export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, hidden: boolean, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } }> };
 
 export type FindAllPostsQueryVariables = Exact<{
   filter: FilterPostsInput;
 }>;
 
 
-export type FindAllPostsQuery = { __typename?: 'Query', findAllPosts: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllPostsQuery = { __typename?: 'Query', findAllPosts: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type FindAllUsersQueryVariables = Exact<{
   filter: FilterUsersInput;
@@ -744,10 +745,12 @@ export const FindAllByMeDocument = gql`
     title
     text
     images
+    hidden
     createdAt
     updatedAt
     isLiked
     likes
+    isMyPost
     user {
       id
       username
@@ -854,6 +857,8 @@ export const FindAllByUsernameDocument = gql`
     updatedAt
     isLiked
     likes
+    hidden
+    isMyPost
     user {
       id
       username
@@ -905,6 +910,7 @@ export const FindAllPostsDocument = gql`
     title
     text
     images
+    hidden
     createdAt
     updatedAt
     user {
@@ -915,6 +921,7 @@ export const FindAllPostsDocument = gql`
     }
     isLiked
     likes
+    isMyPost
   }
 }
     `;

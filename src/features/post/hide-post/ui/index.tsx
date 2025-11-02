@@ -27,7 +27,7 @@ export function HidePost({ postId, hidden, isOpen, setIsOpen }: HidePostProps) {
   const handleHidePost = async () => {
     const result = await hidePost({
       variables: { postId },
-      refetchQueries: ['findAllPosts'],
+      refetchQueries: ['FindAllPosts'],
       awaitRefetchQueries: true,
     });
     if (result.data?.toggleHidePost) {

@@ -4,10 +4,12 @@ query FindAllByMe($filter: FilterPostsInput!) {
     title
     text
     images
+    hidden
     createdAt
     updatedAt
     isLiked
     likes
+    isMyPost
     user {
       id
       username

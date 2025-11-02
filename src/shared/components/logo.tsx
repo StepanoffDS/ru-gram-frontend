@@ -17,7 +17,7 @@ export function Logo({ size = 'medium' }: LogoProps) {
       />
       {size === 'medium' && (
         <span className='font-comfortaa -mb-0.5 -ml-0.5 text-2xl leading-none font-bold'>
-          u-gram
+          ugram.
         </span>
       )}
     </div>

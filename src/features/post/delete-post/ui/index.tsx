@@ -25,7 +25,7 @@ export function DeletePost({ postId, isOpen, setIsOpen }: DeletePostProps) {
   const handleDeletePost = async () => {
     const result = await deletePost({
       variables: { id: postId },
-      refetchQueries: ['findAllPosts'],
+      refetchQueries: ['FindAllPosts', 'FindAllByMe', 'FindAllByUsername'],
       awaitRefetchQueries: true,
     });
     if (result.data?.deletePost) {

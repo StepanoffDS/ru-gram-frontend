@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 
+import { useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -56,6 +57,7 @@ interface EditPostProps {
 export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
   const { isAuthenticated } = useAuth();
   const t = useTranslations('editPostModal');
+  const apolloClient = useApolloClient();
   const [updatePost, { loading: updateLoading }] = useUpdatePostMutation();
   const [uploadLoading, setUploadLoading] = useState(false);
   const form = useForm<UpdatePostSchema>({
@@ -87,7 +89,7 @@ export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
             text: data.text || '',
           },
         },
-        refetchQueries: ['findAllPosts'],
+        refetchQueries: ['FindAllPosts'],
         awaitRefetchQueries: true,
       });
 
@@ -103,6 +105,10 @@ export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
 
           await addImageToPost(post.id, imageFiles[i]);
         }
+
+        await apolloClient.refetchQueries({
+          include: ['FindAllPosts'],
+        });
       }
 
       toast.success(t('successMessage'));
@@ -133,6 +139,11 @@ export function EditPost({ isOpen, setIsOpen, post }: EditPostProps) {
       setUploadLoading(true);
       await removeImageFromPost(post.id, imageUrl);
       setExistingImages((prev) => prev.filter((url) => url !== imageUrl));
+
+      await apolloClient.refetchQueries({
+        include: ['FindAllPosts'],
+      });
+
       toast.success(t('deleteImageSuccessMessage'));
     } catch (error) {
       console.error('Error removing image:', error);
