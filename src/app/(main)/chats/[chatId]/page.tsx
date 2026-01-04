@@ -41,16 +41,8 @@ export default function ChatPage() {
     },
     skip: !chatId,
   });
-  // Подписка на новые сообщения
 
-  const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    data: subscriptionData,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    loading: subscriptionLoading,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    error: subscriptionError,
-  } = useMessageCreatedSubscription({
+  useMessageCreatedSubscription({
     variables: {
       chatId,
     },
@@ -59,14 +51,11 @@ export default function ChatPage() {
       console.log('subscriptionData', subscriptionData);
       if (subscriptionData.data?.messageCreated) {
         const newMessage = subscriptionData.data.messageCreated;
-
-        // Обновляем кэш запроса, добавляя новое сообщение
         updateQuery((prev) => {
           if (!prev?.findMessagesByChatId) {
             return prev;
           }
 
-          // Проверяем, нет ли уже такого сообщения (избегаем дубликатов)
           const messageExists = prev.findMessagesByChatId.some(
             (msg) => msg.id === newMessage.id,
           );
@@ -83,17 +72,6 @@ export default function ChatPage() {
       }
     },
   });
-
-  // useEffect(() => {
-  //   console.log('Subscription state changed:', {
-  //     chatId,
-  //     subscriptionLoading,
-  //     subscriptionError: subscriptionError?.message,
-  //     subscriptionErrorFull: subscriptionError,
-  //     hasSubscriptionData: !!subscriptionData,
-  //     subscriptionData,
-  //   });
-  // }, [chatId, subscriptionLoading, subscriptionError, subscriptionData]);
 
   const messages = useMemo(() => {
     if (!data?.findMessagesByChatId) return [];
