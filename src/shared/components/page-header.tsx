@@ -29,7 +29,10 @@ export function PageHeader({
           ← <span className='hidden sm:inline'>{t('backButtonLabel')}</span>
         </Button>
       )}
-      <h1 className='text-md font-bold text-gray-900 md:text-2xl dark:text-white'>
+      <h1
+        className='text-md font-bold text-gray-900 md:text-2xl dark:text-white'
+        data-heading-tag='H1'
+      >
         {title}
       </h1>
     </div>

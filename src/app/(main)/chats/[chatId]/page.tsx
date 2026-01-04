@@ -1,121 +1,186 @@
 'use client';
 
+import { useParams, useRouter } from 'next/navigation';
+
 import { Send } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { MessageList } from '@/entities/message-list/ui';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import {
+  FindMessagesByChatIdQuery,
+  useCreateMessageMutation,
+  useFindMessagesByChatIdQuery,
+  useMessageCreatedSubscription,
+} from '@/graphql/generated/output';
 import { PageHeader } from '@/shared/components/page-header';
 import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
 
-// Моковые данные для верстки (без бэкенда)
-const mockMessages = [
-  {
-    id: '1',
-    content: 'Привет! Как дела?',
-    images: [],
-    createdAt: new Date(Date.now() - 3600000),
-    user: {
-      id: 'user2',
-      username: 'jane_smith',
-      name: 'Jane Smith',
-      avatar: null,
-    },
-  },
-  {
-    id: '2',
-    content: 'Привет! Всё отлично, спасибо! А у тебя как?',
-    images: [],
-    createdAt: new Date(Date.now() - 1800000),
-    user: {
-      id: 'user1',
-      username: 'john_doe',
-      name: 'John Doe',
-      avatar: null,
-    },
-  },
-  {
-    id: '3',
-    content: 'Тоже всё хорошо! Хотел спросить, можешь помочь с проектом?',
-    images: [],
-    createdAt: new Date(Date.now() - 600000),
-    user: {
-      id: 'user1',
-      username: 'john_doe',
-      name: 'John Doe',
-      avatar: null,
-    },
-  },
-  {
-    id: '4',
-    content: 'Конечно! Что именно нужно?',
-    images: [],
-    createdAt: new Date(),
-    user: {
-      id: 'user2',
-      username: 'jane_smith',
-      name: 'Jane Smith',
-      avatar: null,
-    },
-  },
-];
-
-const mockChatUser = {
-  id: 'user2',
-  username: 'jane_smith',
-  name: 'Jane Smith',
-  avatar: null,
-};
+type Message = FindMessagesByChatIdQuery['findMessagesByChatId'][number];
 
 export default function ChatPage() {
   const params = useParams();
+  const router = useRouter();
   const chatId = params.chatId as string;
   const t = useTranslations('chats.chat');
+  const { userId } = useAuth();
   const [message, setMessage] = useState('');
+  const [createMessage, { loading: sendingMessage }] =
+    useCreateMessageMutation();
 
-  const handleSend = () => {
-    if (!message.trim()) {
+  const { data, loading, error, updateQuery } = useFindMessagesByChatIdQuery({
+    variables: {
+      chatId,
+      pagination: {
+        skip: 0,
+        take: 50,
+      },
+    },
+    skip: !chatId,
+  });
+  // Подписка на новые сообщения
+
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    data: subscriptionData,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    loading: subscriptionLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    error: subscriptionError,
+  } = useMessageCreatedSubscription({
+    variables: {
+      chatId,
+    },
+    skip: !chatId,
+    onData: ({ data: subscriptionData }) => {
+      console.log('subscriptionData', subscriptionData);
+      if (subscriptionData.data?.messageCreated) {
+        const newMessage = subscriptionData.data.messageCreated;
+
+        // Обновляем кэш запроса, добавляя новое сообщение
+        updateQuery((prev) => {
+          if (!prev?.findMessagesByChatId) {
+            return prev;
+          }
+
+          // Проверяем, нет ли уже такого сообщения (избегаем дубликатов)
+          const messageExists = prev.findMessagesByChatId.some(
+            (msg) => msg.id === newMessage.id,
+          );
+
+          if (messageExists) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            findMessagesByChatId: [...prev.findMessagesByChatId, newMessage],
+          };
+        });
+      }
+    },
+  });
+
+  // useEffect(() => {
+  //   console.log('Subscription state changed:', {
+  //     chatId,
+  //     subscriptionLoading,
+  //     subscriptionError: subscriptionError?.message,
+  //     subscriptionErrorFull: subscriptionError,
+  //     hasSubscriptionData: !!subscriptionData,
+  //     subscriptionData,
+  //   });
+  // }, [chatId, subscriptionLoading, subscriptionError, subscriptionData]);
+
+  const messages = useMemo(() => {
+    if (!data?.findMessagesByChatId) return [];
+    return data.findMessagesByChatId.map((msg: Message) => ({
+      id: msg.id,
+      content: msg.content,
+      images: msg.images,
+      createdAt: new Date(msg.createdAt),
+      user: {
+        id: msg.user.id,
+        username: msg.user.username,
+        name: msg.user.name ?? null,
+        avatar: msg.user.avatar ?? null,
+      },
+    }));
+  }, [data]);
+
+  console.log('messages', messages);
+
+  const chatUser = useMemo(() => {
+    if (messages.length > 0) {
+      const otherUser = messages.find((msg) => msg.user.id !== userId)?.user;
+      if (otherUser) return otherUser;
+    }
+    return null;
+  }, [messages, userId]);
+
+  const sendMessage = async () => {
+    if (!message.trim() || !chatId) {
       return;
     }
-    // Здесь будет логика отправки сообщения (без бэкенда)
-    console.log('Sending message:', message);
+
+    const messageContent = message.trim();
     setMessage('');
+
+    try {
+      await createMessage({
+        variables: {
+          chatId,
+          data: {
+            content: messageContent,
+            images: [],
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error(t('errorSending'));
+      setMessage(messageContent);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      sendMessage();
     }
   };
 
-  const displayName = mockChatUser.name || mockChatUser.username;
+  const displayName = chatUser?.name || chatUser?.username || t('title');
 
   return (
-    <div className='flex flex-col h-full'>
-      <PageHeader title={displayName} />
-      <div className='flex-1 overflow-y-auto mb-4 mt-4'>
+    <div className='flex h-full flex-col'>
+      <PageHeader
+        title={displayName}
+        onBack={() => router.replace('/chats')}
+      />
+      <div className='mt-4 mb-4 flex-1 overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
         <MessageList
-          messages={mockMessages}
-          loading={false}
-          error={null}
-          currentUserId='user1'
+          messages={messages}
+          loading={loading}
+          error={error as Error}
+          currentUserId={userId || undefined}
         />
       </div>
-      <div className='flex gap-2 items-end border-t pt-4 mt-auto shrink-0'>
+      <div className='mt-auto flex shrink-0 items-end gap-2 border-t pt-4'>
         <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={t('messagePlaceholder')}
-          className='min-h-[60px] max-h-[120px] resize-none'
+          className='max-h-[120px] min-h-[60px] resize-none'
           rows={1}
         />
         <Button
-          onClick={handleSend}
-          disabled={!message.trim()}
+          onClick={sendMessage}
+          disabled={!message.trim() || sendingMessage}
           size='icon'
           className='h-[60px] w-[60px] shrink-0'
         >

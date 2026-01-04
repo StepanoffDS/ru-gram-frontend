@@ -3,28 +3,17 @@
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ChatItem } from './chat-item';
-import { Card, CardContent, CardDescription } from '@/shared/components/ui/card';
+import { FindAllChatsByMeQuery } from '@/graphql/generated/output';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+} from '@/shared/components/ui/card';
 
-interface Chat {
-  id: string;
-  users: Array<{
-    id: string;
-    username: string;
-    name: string | null;
-    avatar: string | null;
-  }>;
-  messages?: Array<{
-    content: string;
-    createdAt: Date;
-    user: {
-      username: string;
-    };
-  }> | null;
-}
+import { ChatItem } from './chat-item';
 
 interface ChatListProps {
-  chats: Chat[];
+  chats: FindAllChatsByMeQuery['findAllChatsByMe'];
   loading: boolean;
   error: Error | null;
   currentUserId?: string;
@@ -50,7 +39,7 @@ export function ChatList({
   if (error) {
     return (
       <Card>
-        <CardContent className='py-12 text-center text-destructive'>
+        <CardContent className='text-destructive py-12 text-center'>
           {t('errorLoading')}: {error.message}
         </CardContent>
       </Card>
@@ -61,7 +50,7 @@ export function ChatList({
     return (
       <Card>
         <CardContent className='py-12 text-center'>
-          <CardDescription className='text-lg font-semibold mb-2'>
+          <CardDescription className='mb-2 text-lg font-semibold'>
             {t('noChats')}
           </CardDescription>
           <CardDescription>{t('noChatsDescription')}</CardDescription>

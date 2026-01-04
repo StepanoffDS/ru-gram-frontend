@@ -1,0 +1,25 @@
+query FindAllChatsByMe {
+  findAllChatsByMe {
+    id
+    createdAt
+    updatedAt
+    users {
+      id
+      username
+      name
+      avatar
+    }
+    messages {
+      id
+      content
+      images
+      createdAt
+      user {
+        id
+        username
+        name
+        avatar
+      }
+    }
+  }
+}

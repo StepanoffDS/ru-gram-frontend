@@ -11,14 +11,30 @@ const httpLink = new HttpLink({
 const createWsLink = () => {
   if (typeof window === 'undefined') return null;
 
-  return new GraphQLWsLink(
-    createClient({
-      url: process.env.NEXT_PUBLIC_SUBSCRIPTIONS_URL || '',
-      connectionParams: async () => {
-        return {};
+  const client = createClient({
+    url: process.env.NEXT_PUBLIC_SUBSCRIPTIONS_URL || '',
+    connectionParams: async () => {
+      const cookies = document.cookie;
+      return {
+        headers: {
+          cookie: cookies,
+        },
+      };
+    },
+    on: {
+      opened: () => {
+        console.log('WebSocket connection opened');
       },
-    }),
-  );
+      closed: () => {
+        console.log('WebSocket connection closed');
+      },
+      error: (error) => {
+        console.error('WebSocket error:', error);
+      },
+    },
+  });
+
+  return new GraphQLWsLink(client);
 };
 
 const wsLink = createWsLink();

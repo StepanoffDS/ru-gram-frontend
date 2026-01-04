@@ -1,0 +1,18 @@
+query FindMessagesByChatId(
+  $chatId: String!
+  $pagination: MessagesPaginationInput
+) {
+  findMessagesByChatId(chatId: $chatId, pagination: $pagination) {
+    id
+    content
+    images
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+  }
+}

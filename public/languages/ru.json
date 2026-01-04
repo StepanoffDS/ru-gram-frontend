@@ -56,11 +56,11 @@
       "createPost": "Создать",
       "home": "Главная",
       "profile": "Мой профиль",
-    "search": "Поиск",
-    "chats": "Чаты",
-    "other": "Другое",
-    "logout": "Выйти",
-    "loadingLogout": "Выход..."
+      "search": "Поиск",
+      "chats": "Чаты",
+      "other": "Другое",
+      "logout": "Выйти",
+      "loadingLogout": "Выход..."
     }
   },
   "themeToggleSwitch": {
@@ -203,7 +203,8 @@
     "errorMessage": "Не удалось удалить профиль"
   },
   "profileInfo": {
-    "errorLoadingProfile": "Не удалось загрузить информацию о профиле"
+    "errorLoadingProfile": "Не удалось загрузить информацию о профиле",
+    "writeMessage": "Написать"
   },
   "imageWindow": {
     "closeButton": "Закрыть"
@@ -235,7 +236,8 @@
       "sendMessage": "Отправить сообщение",
       "messagePlaceholder": "Введите сообщение...",
       "sending": "Отправка...",
-      "emptyMessage": "Сообщение не может быть пустым"
+      "emptyMessage": "Сообщение не может быть пустым",
+      "errorSending": "Не удалось отправить сообщение"
     }
   }
 }

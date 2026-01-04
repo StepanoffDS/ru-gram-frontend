@@ -200,7 +200,8 @@
     "errorMessage": "Failed to delete profile"
   },
   "profileInfo": {
-    "errorLoadingProfile": "Failed to load profile information"
+    "errorLoadingProfile": "Failed to load profile information",
+    "writeMessage": "Write"
   },
   "imageWindow": {
     "closeButton": "Close"
@@ -232,7 +233,8 @@
       "sendMessage": "Send message",
       "messagePlaceholder": "Type a message...",
       "sending": "Sending...",
-      "emptyMessage": "Message cannot be empty"
+      "emptyMessage": "Message cannot be empty",
+      "errorSending": "Failed to send message"
     }
   }
 }

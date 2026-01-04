@@ -1,0 +1,25 @@
+mutation CreateOrFindChat($data: CreateChatInput!) {
+  createOrFindChat(data: $data) {
+    id
+    createdAt
+    updatedAt
+    users {
+      id
+      username
+      name
+      avatar
+    }
+    messages {
+      id
+      content
+      images
+      createdAt
+      user {
+        id
+        username
+        name
+        avatar
+      }
+    }
+  }
+}

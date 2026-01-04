@@ -1,12 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { PencilIcon } from 'lucide-react';
+import { MessageSquare, PencilIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Role } from '@/features/auth/types';
-import { FindMeQuery, UserModel } from '@/graphql/generated/output';
+import {
+  FindMeQuery,
+  useCreateOrFindChatMutation,
+  UserModel,
+} from '@/graphql/generated/output';
 import {
   Avatar,
   AvatarFallback,
@@ -34,6 +39,9 @@ export function ProfileInfo({
   isMe,
 }: ProfileInfoProps) {
   const t = useTranslations('profileInfo');
+  const router = useRouter();
+  const [createOrFindChat, { loading: chatLoading }] =
+    useCreateOrFindChatMutation();
 
   if (loading) {
     return (
@@ -65,6 +73,26 @@ export function ProfileInfo({
   }
 
   const displayName = profile?.name || profile.username;
+
+  const handleStartChat = async () => {
+    if (!profile?.id || isMe) return;
+
+    try {
+      const { data } = await createOrFindChat({
+        variables: {
+          data: {
+            userIds: [profile.id],
+          },
+        },
+      });
+
+      if (data?.createOrFindChat?.id) {
+        router.push(`/chats/${data.createOrFindChat.id}`);
+      }
+    } catch (error) {
+      console.error('Failed to create or find chat:', error);
+    }
+  };
 
   return (
     <div className='border-b border-gray-200 dark:border-gray-800'>
@@ -125,6 +153,20 @@ export function ProfileInfo({
               )}
             </div>
           </div>
+          {!isMe && (
+            <div className='flex items-start'>
+              <Button
+                onClick={handleStartChat}
+                disabled={chatLoading}
+                variant='default'
+                size='sm'
+                className='flex items-center gap-2'
+              >
+                <MessageSquare className='h-4 w-4' />
+                {t('writeMessage')}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

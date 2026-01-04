@@ -1,0 +1,15 @@
+mutation CreateMessage($chatId: String!, $data: CreateMessageInput!) {
+  createMessage(chatId: $chatId, data: $data) {
+    id
+    content
+    images
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+  }
+}

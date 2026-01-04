@@ -3,21 +3,21 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
+import { FindAllChatsByMeQuery } from '@/graphql/generated/output';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/shared/components/ui/avatar';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { cn } from '@/shared/libs/utils';
 
 interface ChatItemProps {
   id: string;
-  users: Array<{
-    id: string;
-    username: string;
-    name: string | null;
-    avatar: string | null;
-  }>;
+  users: FindAllChatsByMeQuery['findAllChatsByMe'][number]['users'];
   lastMessage?: {
     content: string;
-    createdAt: Date;
+    createdAt: Date | string;
     user: {
       username: string;
     };
@@ -25,17 +25,19 @@ interface ChatItemProps {
   currentUserId?: string;
 }
 
-export function ChatItem({ id, users, lastMessage, currentUserId }: ChatItemProps) {
+export function ChatItem({
+  id,
+  users,
+  lastMessage,
+  currentUserId,
+}: ChatItemProps) {
   const params = useParams();
   const isActive = params.chatId === id;
 
-  // Получаем собеседника (не текущего пользователя)
   const otherUser = users.find((user) => user.id !== currentUserId) || users[0];
 
-  // Форматируем имя
   const displayName = otherUser.name || otherUser.username;
 
-  // Обрезаем последнее сообщение
   const messagePreview = lastMessage
     ? lastMessage.content.length > 50
       ? `${lastMessage.content.substring(0, 50)}...`
@@ -46,7 +48,7 @@ export function ChatItem({ id, users, lastMessage, currentUserId }: ChatItemProp
     <Link href={`/chats/${id}`}>
       <Card
         className={cn(
-          'cursor-pointer transition-colors hover:bg-accent',
+          'hover:bg-accent cursor-pointer transition-colors',
           isActive && 'bg-accent border-primary',
         )}
       >
@@ -60,10 +62,10 @@ export function ChatItem({ id, users, lastMessage, currentUserId }: ChatItemProp
               {displayName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div className='flex-1 min-w-0'>
-            <div className='font-semibold truncate'>{displayName}</div>
+          <div className='min-w-0 flex-1'>
+            <div className='truncate font-semibold'>{displayName}</div>
             {lastMessage && (
-              <div className='text-sm text-muted-foreground truncate'>
+              <div className='text-muted-foreground truncate text-sm'>
                 {messagePreview}
               </div>
             )}
