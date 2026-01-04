@@ -31,6 +31,7 @@
     "dayjs": "^1.11.18",
     "dotenv": "^17.2.3",
     "graphql": "^16.11.0",
+    "graphql-ws": "^6.0.6",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
     "next-intl": "^4.3.9",
