@@ -56,10 +56,11 @@
       "createPost": "Создать",
       "home": "Главная",
       "profile": "Мой профиль",
-      "search": "Поиск",
-      "other": "Другое",
-      "logout": "Выйти",
-      "loadingLogout": "Выход..."
+    "search": "Поиск",
+    "chats": "Чаты",
+    "other": "Другое",
+    "logout": "Выйти",
+    "loadingLogout": "Выход..."
     }
   },
   "themeToggleSwitch": {
@@ -218,5 +219,23 @@
     "cancelButton": "Отмена",
     "submitButton": "Обновить",
     "loading": "Обновление..."
+  },
+  "chats": {
+    "title": "Чаты",
+    "noChats": "У вас пока нет чатов",
+    "noChatsDescription": "Начните общение с другими пользователями",
+    "loading": "Загрузка чатов...",
+    "errorLoading": "Ошибка загрузки чатов",
+    "chat": {
+      "title": "Чат",
+      "noMessages": "Нет сообщений",
+      "noMessagesDescription": "Начните общение, отправив первое сообщение",
+      "loading": "Загрузка сообщений...",
+      "errorLoading": "Ошибка загрузки сообщений",
+      "sendMessage": "Отправить сообщение",
+      "messagePlaceholder": "Введите сообщение...",
+      "sending": "Отправка...",
+      "emptyMessage": "Сообщение не может быть пустым"
+    }
   }
 }

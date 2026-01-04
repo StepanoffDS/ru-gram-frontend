@@ -57,6 +57,7 @@
       "home": "Home",
       "profile": "My profile",
       "search": "Search",
+      "chats": "Chats",
       "other": "Other",
       "logout": "Logout",
       "loadingLogout": "Logout..."
@@ -215,5 +216,23 @@
     "cancelButton": "Cancel",
     "submitButton": "Update",
     "loading": "Updating..."
+  },
+  "chats": {
+    "title": "Chats",
+    "noChats": "You don't have any chats yet",
+    "noChatsDescription": "Start chatting with other users",
+    "loading": "Loading chats...",
+    "errorLoading": "Error loading chats",
+    "chat": {
+      "title": "Chat",
+      "noMessages": "No messages",
+      "noMessagesDescription": "Start the conversation by sending the first message",
+      "loading": "Loading messages...",
+      "errorLoading": "Error loading messages",
+      "sendMessage": "Send message",
+      "messagePlaceholder": "Type a message...",
+      "sending": "Sending...",
+      "emptyMessage": "Message cannot be empty"
+    }
   }
 }

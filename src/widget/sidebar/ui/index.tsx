@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   HomeIcon,
   LogOutIcon,
+  MessageSquareIcon,
   PlusIcon,
   SearchIcon,
   UserIcon,
@@ -110,6 +111,18 @@ export function MainSidebar() {
                   <Link href='/search'>
                     <SearchIcon />
                     {t('menu.search')}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size='lg'
+                  asChild={true}
+                >
+                  <Link href='/chats'>
+                    <MessageSquareIcon />
+                    {t('menu.chats')}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

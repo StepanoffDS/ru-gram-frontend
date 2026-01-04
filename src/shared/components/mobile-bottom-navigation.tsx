@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   HomeIcon,
   LogOutIcon,
+  MessageSquareIcon,
   Moon,
   MoreHorizontalIcon,
   PlusIcon,
@@ -121,6 +122,20 @@ export function MobileBottomNavigation({
               <SearchIcon className='h-7 w-7' />
               <span className='hidden text-xs sm:block'>
                 {t('menu.search')}
+              </span>
+            </Link>
+          </Button>
+
+          <Button
+            variant='ghost'
+            size='sm'
+            asChild
+            className='flex h-auto flex-col items-center gap-1 px-3 py-2'
+          >
+            <Link href='/chats'>
+              <MessageSquareIcon className='h-7 w-7' />
+              <span className='hidden text-xs sm:block'>
+                {t('menu.chats')}
               </span>
             </Link>
           </Button>
