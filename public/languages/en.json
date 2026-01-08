@@ -2,6 +2,11 @@
   "home": {
     "title": "Home page"
   },
+  "mainPage": {
+    "allPosts": "All",
+    "following": "Following",
+    "noFollowingPosts": "No posts from following"
+  },
   "profilePostsList": {
     "noPosts": "No posts"
   },
@@ -201,7 +206,27 @@
   },
   "profileInfo": {
     "errorLoadingProfile": "Failed to load profile information",
-    "writeMessage": "Write"
+    "writeMessage": "Write",
+    "posts": "posts",
+    "followers": "followers",
+    "following": "following"
+  },
+  "follow": {
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "followedSuccessfully": "Successfully followed",
+    "unfollowedSuccessfully": "Successfully unfollowed",
+    "followError": "Failed to follow",
+    "unfollowError": "Failed to unfollow"
+  },
+  "followers": {
+    "title": "{name}'s Followers"
+  },
+  "following": {
+    "title": "{name}'s Following"
+  },
+  "usersList": {
+    "noUsers": "No users"
   },
   "imageWindow": {
     "closeButton": "Close"

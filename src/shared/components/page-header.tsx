@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from './ui/button';
 
 interface PageHeaderProps {
-  title: string;
+  title: string | React.ReactNode;
   onBack?: () => void;
   withBackButton?: boolean;
 }

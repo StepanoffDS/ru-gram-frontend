@@ -1,0 +1,16 @@
+query GetFollowing($userId: String!, $skip: Int, $take: Int) {
+  getFollowing(userId: $userId, skip: $skip, take: $take) {
+    data {
+      id
+      username
+      name
+      avatar
+      bio
+      followedAt
+    }
+    total
+    skip
+    take
+    hasMore
+  }
+}

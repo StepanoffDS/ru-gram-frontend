@@ -11,13 +11,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider className='flex h-screen overflow-hidden'>
+    <SidebarProvider className='flex h-screen'>
       <MainSidebar />
-      <main className='relative flex-1 flex flex-col overflow-hidden'>
+      <main className='relative flex flex-1 flex-col'>
         <SidebarTrigger />
-        <div className='my-container flex-1 flex flex-col overflow-hidden'>
-          {children}
-        </div>
+        <div className='my-container flex flex-1 flex-col'>{children}</div>
       </main>
       <MobileBottomNavigation />
     </SidebarProvider>

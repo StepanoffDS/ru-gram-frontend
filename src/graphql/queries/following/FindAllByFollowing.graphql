@@ -1,0 +1,20 @@
+query FindAllByFollowing($filter: FilterPostsInput!) {
+  findAllByFollowing(filter: $filter) {
+    id
+    title
+    text
+    images
+    hidden
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+    isLiked
+    likes
+    isMyPost
+  }
+}

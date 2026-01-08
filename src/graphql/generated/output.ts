@@ -138,10 +138,12 @@ export type Mutation = {
   deleteMessage: Scalars['Boolean']['output'];
   deletePost: Scalars['Boolean']['output'];
   deleteProfile: Scalars['Boolean']['output'];
+  followUser: Scalars['Boolean']['output'];
   loginUser: UserModel;
   logoutUser: Scalars['String']['output'];
   toggleHidePost: PostModel;
   toggleLikePost: LikeResponseModel;
+  unfollowUser: Scalars['Boolean']['output'];
   updatePost: PostModel;
 };
 
@@ -197,6 +199,11 @@ export type MutationDeletePostArgs = {
 };
 
 
+export type MutationFollowUserArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationLoginUserArgs = {
   data: LoginInput;
 };
@@ -212,6 +219,11 @@ export type MutationToggleLikePostArgs = {
 };
 
 
+export type MutationUnfollowUserArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdatePostArgs = {
   data: UpdatePostInput;
   id: Scalars['String']['input'];
@@ -220,6 +232,15 @@ export type MutationUpdatePostArgs = {
 export type PaginatedLikedUsersModel = {
   __typename?: 'PaginatedLikedUsersModel';
   data: Array<LikedUserModel>;
+  hasMore: Scalars['Boolean']['output'];
+  skip: Scalars['Int']['output'];
+  take: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
+export type PaginatedUsersModel = {
+  __typename?: 'PaginatedUsersModel';
+  data: Array<UserPreviewModel>;
   hasMore: Scalars['Boolean']['output'];
   skip: Scalars['Int']['output'];
   take: Scalars['Int']['output'];
@@ -256,6 +277,7 @@ export type PostModel = {
 
 export type Query = {
   __typename?: 'Query';
+  findAllByFollowing: Array<PostModel>;
   findAllByMe: Array<PostModel>;
   findAllByMeHidden: Array<PostModel>;
   findAllByUsername: Array<PostModel>;
@@ -267,7 +289,17 @@ export type Query = {
   findMessagesByChatId: Array<MessageModel>;
   findOneById: PostModel;
   findOneByUsername: UserModel;
+  getFollowers: PaginatedUsersModel;
+  getFollowersCount: Scalars['Int']['output'];
+  getFollowing: PaginatedUsersModel;
+  getFollowingCount: Scalars['Int']['output'];
   getLikedUsersByPost: PaginatedLikedUsersModel;
+  isFollowing: Scalars['Boolean']['output'];
+};
+
+
+export type QueryFindAllByFollowingArgs = {
+  filter: FilterPostsInput;
 };
 
 
@@ -318,9 +350,38 @@ export type QueryFindOneByUsernameArgs = {
 };
 
 
+export type QueryGetFollowersArgs = {
+  skip?: Scalars['Int']['input'];
+  take?: Scalars['Int']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type QueryGetFollowersCountArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type QueryGetFollowingArgs = {
+  skip?: Scalars['Int']['input'];
+  take?: Scalars['Int']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type QueryGetFollowingCountArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type QueryGetLikedUsersByPostArgs = {
   pagination?: LikesPaginationInput;
   postId: Scalars['String']['input'];
+};
+
+
+export type QueryIsFollowingArgs = {
+  userId: Scalars['String']['input'];
 };
 
 export type Subscription = {
@@ -345,14 +406,28 @@ export type UserModel = {
   bio?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  followersCount?: Maybe<Scalars['Int']['output']>;
+  followingCount?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
+  isFollowing?: Maybe<Scalars['Boolean']['output']>;
   isMe: Scalars['Boolean']['output'];
   name?: Maybe<Scalars['String']['output']>;
   password: Scalars['String']['output'];
   postLikes: Array<PostLikesModel>;
   posts: Array<PostModel>;
+  postsCount?: Maybe<Scalars['Int']['output']>;
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+  username: Scalars['String']['output'];
+};
+
+export type UserPreviewModel = {
+  __typename?: 'UserPreviewModel';
+  avatar?: Maybe<Scalars['String']['output']>;
+  bio?: Maybe<Scalars['String']['output']>;
+  followedAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   username: Scalars['String']['output'];
 };
 
@@ -389,6 +464,20 @@ export type CreateOrFindChatMutationVariables = Exact<{
 
 
 export type CreateOrFindChatMutation = { __typename?: 'Mutation', createOrFindChat: { __typename?: 'ChatModel', id: string, createdAt: any, updatedAt: any, users: Array<{ __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null }>, messages: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> } };
+
+export type FollowUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type FollowUserMutation = { __typename?: 'Mutation', followUser: boolean };
+
+export type UnfollowUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: boolean };
 
 export type CreatePostMutationVariables = Exact<{
   data: CreatePostInput;
@@ -438,6 +527,13 @@ export type DeleteProfileMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type DeleteProfileMutation = { __typename?: 'Mutation', deleteProfile: boolean };
 
+export type FindAllByFollowingQueryVariables = Exact<{
+  filter: FilterPostsInput;
+}>;
+
+
+export type FindAllByFollowingQuery = { __typename?: 'Query', findAllByFollowing: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+
 export type FindAllByMeQueryVariables = Exact<{
   filter: FilterPostsInput;
 }>;
@@ -477,14 +573,14 @@ export type FindAllUsersQuery = { __typename?: 'Query', findAllUsers: Array<{ __
 export type FindMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindMeQuery = { __typename?: 'Query', findMe: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string } };
+export type FindMeQuery = { __typename?: 'Query', findMe: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string, followersCount?: number | null, followingCount?: number | null } };
 
 export type FindOneByUsernameQueryVariables = Exact<{
   username: Scalars['String']['input'];
 }>;
 
 
-export type FindOneByUsernameQuery = { __typename?: 'Query', findOneByUsername: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string, isMe: boolean } };
+export type FindOneByUsernameQuery = { __typename?: 'Query', findOneByUsername: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string, isMe: boolean, followersCount?: number | null, followingCount?: number | null, postsCount?: number | null, isFollowing?: boolean | null } };
 
 export type FindAllChatsByMeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -498,6 +594,38 @@ export type FindMessagesByChatIdQueryVariables = Exact<{
 
 
 export type FindMessagesByChatIdQuery = { __typename?: 'Query', findMessagesByChatId: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+
+export type GetFollowersQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetFollowersQuery = { __typename?: 'Query', getFollowers: { __typename?: 'PaginatedUsersModel', total: number, skip: number, take: number, hasMore: boolean, data: Array<{ __typename?: 'UserPreviewModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, followedAt: any }> } };
+
+export type GetFollowersCountQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetFollowersCountQuery = { __typename?: 'Query', getFollowersCount: number };
+
+export type GetFollowingQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetFollowingQuery = { __typename?: 'Query', getFollowing: { __typename?: 'PaginatedUsersModel', total: number, skip: number, take: number, hasMore: boolean, data: Array<{ __typename?: 'UserPreviewModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, followedAt: any }> } };
+
+export type GetFollowingCountQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetFollowingCountQuery = { __typename?: 'Query', getFollowingCount: number };
 
 export type MessageCreatedSubscriptionVariables = Exact<{
   chatId: Scalars['String']['input'];
@@ -704,6 +832,68 @@ export function useCreateOrFindChatMutation(baseOptions?: Apollo.MutationHookOpt
 export type CreateOrFindChatMutationHookResult = ReturnType<typeof useCreateOrFindChatMutation>;
 export type CreateOrFindChatMutationResult = Apollo.MutationResult<CreateOrFindChatMutation>;
 export type CreateOrFindChatMutationOptions = Apollo.BaseMutationOptions<CreateOrFindChatMutation, CreateOrFindChatMutationVariables>;
+export const FollowUserDocument = gql`
+    mutation FollowUser($userId: String!) {
+  followUser(userId: $userId)
+}
+    `;
+export type FollowUserMutationFn = Apollo.MutationFunction<FollowUserMutation, FollowUserMutationVariables>;
+
+/**
+ * __useFollowUserMutation__
+ *
+ * To run a mutation, you first call `useFollowUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFollowUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [followUserMutation, { data, loading, error }] = useFollowUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useFollowUserMutation(baseOptions?: Apollo.MutationHookOptions<FollowUserMutation, FollowUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FollowUserMutation, FollowUserMutationVariables>(FollowUserDocument, options);
+      }
+export type FollowUserMutationHookResult = ReturnType<typeof useFollowUserMutation>;
+export type FollowUserMutationResult = Apollo.MutationResult<FollowUserMutation>;
+export type FollowUserMutationOptions = Apollo.BaseMutationOptions<FollowUserMutation, FollowUserMutationVariables>;
+export const UnfollowUserDocument = gql`
+    mutation UnfollowUser($userId: String!) {
+  unfollowUser(userId: $userId)
+}
+    `;
+export type UnfollowUserMutationFn = Apollo.MutationFunction<UnfollowUserMutation, UnfollowUserMutationVariables>;
+
+/**
+ * __useUnfollowUserMutation__
+ *
+ * To run a mutation, you first call `useUnfollowUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnfollowUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unfollowUserMutation, { data, loading, error }] = useUnfollowUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUnfollowUserMutation(baseOptions?: Apollo.MutationHookOptions<UnfollowUserMutation, UnfollowUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnfollowUserMutation, UnfollowUserMutationVariables>(UnfollowUserDocument, options);
+      }
+export type UnfollowUserMutationHookResult = ReturnType<typeof useUnfollowUserMutation>;
+export type UnfollowUserMutationResult = Apollo.MutationResult<UnfollowUserMutation>;
+export type UnfollowUserMutationOptions = Apollo.BaseMutationOptions<UnfollowUserMutation, UnfollowUserMutationVariables>;
 export const CreatePostDocument = gql`
     mutation CreatePost($data: CreatePostInput!) {
   createPost(data: $data) {
@@ -949,6 +1139,61 @@ export function useDeleteProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteProfileMutationHookResult = ReturnType<typeof useDeleteProfileMutation>;
 export type DeleteProfileMutationResult = Apollo.MutationResult<DeleteProfileMutation>;
 export type DeleteProfileMutationOptions = Apollo.BaseMutationOptions<DeleteProfileMutation, DeleteProfileMutationVariables>;
+export const FindAllByFollowingDocument = gql`
+    query FindAllByFollowing($filter: FilterPostsInput!) {
+  findAllByFollowing(filter: $filter) {
+    id
+    title
+    text
+    images
+    hidden
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+    isLiked
+    likes
+    isMyPost
+  }
+}
+    `;
+
+/**
+ * __useFindAllByFollowingQuery__
+ *
+ * To run a query within a React component, call `useFindAllByFollowingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindAllByFollowingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindAllByFollowingQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *   },
+ * });
+ */
+export function useFindAllByFollowingQuery(baseOptions: Apollo.QueryHookOptions<FindAllByFollowingQuery, FindAllByFollowingQueryVariables> & ({ variables: FindAllByFollowingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>(FindAllByFollowingDocument, options);
+      }
+export function useFindAllByFollowingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>(FindAllByFollowingDocument, options);
+        }
+export function useFindAllByFollowingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>(FindAllByFollowingDocument, options);
+        }
+export type FindAllByFollowingQueryHookResult = ReturnType<typeof useFindAllByFollowingQuery>;
+export type FindAllByFollowingLazyQueryHookResult = ReturnType<typeof useFindAllByFollowingLazyQuery>;
+export type FindAllByFollowingSuspenseQueryHookResult = ReturnType<typeof useFindAllByFollowingSuspenseQuery>;
+export type FindAllByFollowingQueryResult = Apollo.QueryResult<FindAllByFollowingQuery, FindAllByFollowingQueryVariables>;
 export const FindAllByMeDocument = gql`
     query FindAllByMe($filter: FilterPostsInput!) {
   findAllByMe(filter: $filter) {
@@ -1226,6 +1471,8 @@ export const FindMeDocument = gql`
     avatar
     bio
     role
+    followersCount
+    followingCount
   }
 }
     `;
@@ -1271,6 +1518,10 @@ export const FindOneByUsernameDocument = gql`
     bio
     role
     isMe
+    followersCount
+    followingCount
+    postsCount
+    isFollowing
   }
 }
     `;
@@ -1417,6 +1668,188 @@ export type FindMessagesByChatIdQueryHookResult = ReturnType<typeof useFindMessa
 export type FindMessagesByChatIdLazyQueryHookResult = ReturnType<typeof useFindMessagesByChatIdLazyQuery>;
 export type FindMessagesByChatIdSuspenseQueryHookResult = ReturnType<typeof useFindMessagesByChatIdSuspenseQuery>;
 export type FindMessagesByChatIdQueryResult = Apollo.QueryResult<FindMessagesByChatIdQuery, FindMessagesByChatIdQueryVariables>;
+export const GetFollowersDocument = gql`
+    query GetFollowers($userId: String!, $skip: Int, $take: Int) {
+  getFollowers(userId: $userId, skip: $skip, take: $take) {
+    data {
+      id
+      username
+      name
+      avatar
+      bio
+      followedAt
+    }
+    total
+    skip
+    take
+    hasMore
+  }
+}
+    `;
+
+/**
+ * __useGetFollowersQuery__
+ *
+ * To run a query within a React component, call `useGetFollowersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFollowersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFollowersQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      skip: // value for 'skip'
+ *      take: // value for 'take'
+ *   },
+ * });
+ */
+export function useGetFollowersQuery(baseOptions: Apollo.QueryHookOptions<GetFollowersQuery, GetFollowersQueryVariables> & ({ variables: GetFollowersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFollowersQuery, GetFollowersQueryVariables>(GetFollowersDocument, options);
+      }
+export function useGetFollowersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFollowersQuery, GetFollowersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFollowersQuery, GetFollowersQueryVariables>(GetFollowersDocument, options);
+        }
+export function useGetFollowersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFollowersQuery, GetFollowersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFollowersQuery, GetFollowersQueryVariables>(GetFollowersDocument, options);
+        }
+export type GetFollowersQueryHookResult = ReturnType<typeof useGetFollowersQuery>;
+export type GetFollowersLazyQueryHookResult = ReturnType<typeof useGetFollowersLazyQuery>;
+export type GetFollowersSuspenseQueryHookResult = ReturnType<typeof useGetFollowersSuspenseQuery>;
+export type GetFollowersQueryResult = Apollo.QueryResult<GetFollowersQuery, GetFollowersQueryVariables>;
+export const GetFollowersCountDocument = gql`
+    query GetFollowersCount($userId: String!) {
+  getFollowersCount(userId: $userId)
+}
+    `;
+
+/**
+ * __useGetFollowersCountQuery__
+ *
+ * To run a query within a React component, call `useGetFollowersCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFollowersCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFollowersCountQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetFollowersCountQuery(baseOptions: Apollo.QueryHookOptions<GetFollowersCountQuery, GetFollowersCountQueryVariables> & ({ variables: GetFollowersCountQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFollowersCountQuery, GetFollowersCountQueryVariables>(GetFollowersCountDocument, options);
+      }
+export function useGetFollowersCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFollowersCountQuery, GetFollowersCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFollowersCountQuery, GetFollowersCountQueryVariables>(GetFollowersCountDocument, options);
+        }
+export function useGetFollowersCountSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFollowersCountQuery, GetFollowersCountQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFollowersCountQuery, GetFollowersCountQueryVariables>(GetFollowersCountDocument, options);
+        }
+export type GetFollowersCountQueryHookResult = ReturnType<typeof useGetFollowersCountQuery>;
+export type GetFollowersCountLazyQueryHookResult = ReturnType<typeof useGetFollowersCountLazyQuery>;
+export type GetFollowersCountSuspenseQueryHookResult = ReturnType<typeof useGetFollowersCountSuspenseQuery>;
+export type GetFollowersCountQueryResult = Apollo.QueryResult<GetFollowersCountQuery, GetFollowersCountQueryVariables>;
+export const GetFollowingDocument = gql`
+    query GetFollowing($userId: String!, $skip: Int, $take: Int) {
+  getFollowing(userId: $userId, skip: $skip, take: $take) {
+    data {
+      id
+      username
+      name
+      avatar
+      bio
+      followedAt
+    }
+    total
+    skip
+    take
+    hasMore
+  }
+}
+    `;
+
+/**
+ * __useGetFollowingQuery__
+ *
+ * To run a query within a React component, call `useGetFollowingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFollowingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFollowingQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      skip: // value for 'skip'
+ *      take: // value for 'take'
+ *   },
+ * });
+ */
+export function useGetFollowingQuery(baseOptions: Apollo.QueryHookOptions<GetFollowingQuery, GetFollowingQueryVariables> & ({ variables: GetFollowingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFollowingQuery, GetFollowingQueryVariables>(GetFollowingDocument, options);
+      }
+export function useGetFollowingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFollowingQuery, GetFollowingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFollowingQuery, GetFollowingQueryVariables>(GetFollowingDocument, options);
+        }
+export function useGetFollowingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFollowingQuery, GetFollowingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFollowingQuery, GetFollowingQueryVariables>(GetFollowingDocument, options);
+        }
+export type GetFollowingQueryHookResult = ReturnType<typeof useGetFollowingQuery>;
+export type GetFollowingLazyQueryHookResult = ReturnType<typeof useGetFollowingLazyQuery>;
+export type GetFollowingSuspenseQueryHookResult = ReturnType<typeof useGetFollowingSuspenseQuery>;
+export type GetFollowingQueryResult = Apollo.QueryResult<GetFollowingQuery, GetFollowingQueryVariables>;
+export const GetFollowingCountDocument = gql`
+    query GetFollowingCount($userId: String!) {
+  getFollowingCount(userId: $userId)
+}
+    `;
+
+/**
+ * __useGetFollowingCountQuery__
+ *
+ * To run a query within a React component, call `useGetFollowingCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFollowingCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFollowingCountQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetFollowingCountQuery(baseOptions: Apollo.QueryHookOptions<GetFollowingCountQuery, GetFollowingCountQueryVariables> & ({ variables: GetFollowingCountQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFollowingCountQuery, GetFollowingCountQueryVariables>(GetFollowingCountDocument, options);
+      }
+export function useGetFollowingCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFollowingCountQuery, GetFollowingCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFollowingCountQuery, GetFollowingCountQueryVariables>(GetFollowingCountDocument, options);
+        }
+export function useGetFollowingCountSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFollowingCountQuery, GetFollowingCountQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFollowingCountQuery, GetFollowingCountQueryVariables>(GetFollowingCountDocument, options);
+        }
+export type GetFollowingCountQueryHookResult = ReturnType<typeof useGetFollowingCountQuery>;
+export type GetFollowingCountLazyQueryHookResult = ReturnType<typeof useGetFollowingCountLazyQuery>;
+export type GetFollowingCountSuspenseQueryHookResult = ReturnType<typeof useGetFollowingCountSuspenseQuery>;
+export type GetFollowingCountQueryResult = Apollo.QueryResult<GetFollowingCountQuery, GetFollowingCountQueryVariables>;
 export const MessageCreatedDocument = gql`
     subscription MessageCreated($chatId: String!) {
   messageCreated(chatId: $chatId) {

@@ -7,5 +7,9 @@ query FindOneByUsername($username: String!) {
     bio
     role
     isMe
+    followersCount
+    followingCount
+    postsCount
+    isFollowing
   }
 }

@@ -2,6 +2,11 @@
   "home": {
     "title": "Главная страница"
   },
+  "mainPage": {
+    "allPosts": "Все",
+    "following": "Подписки",
+    "noFollowingPosts": "Нет постов от подписок"
+  },
   "profilePostsList": {
     "noPosts": "Нет постов"
   },
@@ -204,7 +209,27 @@
   },
   "profileInfo": {
     "errorLoadingProfile": "Не удалось загрузить информацию о профиле",
-    "writeMessage": "Написать"
+    "writeMessage": "Написать",
+    "posts": "постов",
+    "followers": "подписчиков",
+    "following": "подписок"
+  },
+  "follow": {
+    "follow": "Подписаться",
+    "unfollow": "Отписаться",
+    "followedSuccessfully": "Вы успешно подписались",
+    "unfollowedSuccessfully": "Вы успешно отписались",
+    "followError": "Не удалось подписаться",
+    "unfollowError": "Не удалось отписаться"
+  },
+  "followers": {
+    "title": "Подписчики {name}"
+  },
+  "following": {
+    "title": "Подписки {name}"
+  },
+  "usersList": {
+    "noUsers": "Нет пользователей"
   },
   "imageWindow": {
     "closeButton": "Закрыть"

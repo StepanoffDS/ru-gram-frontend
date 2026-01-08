@@ -6,5 +6,7 @@ query FindMe {
     avatar
     bio
     role
+    followersCount
+    followingCount
   }
 }

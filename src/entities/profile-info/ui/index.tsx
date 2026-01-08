@@ -7,8 +7,8 @@ import { MessageSquare, PencilIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Role } from '@/features/auth/types';
+import { FollowUser } from '@/features/follow/follow-user';
 import {
-  FindMeQuery,
   useCreateOrFindChatMutation,
   UserModel,
 } from '@/graphql/generated/output';
@@ -151,22 +151,55 @@ export function ProfileInfo({
                   {profile.bio}
                 </p>
               )}
+
+              <div className='mt-4 flex gap-6'>
+                <div className='cursor-pointer text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'>
+                  <span className='font-semibold'>
+                    {profile.postsCount ?? 0}
+                  </span>{' '}
+                  {t('posts')}
+                </div>
+                <Link
+                  href={`/profile/${profile.username}/followers`}
+                  className='cursor-pointer text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+                >
+                  <span className='font-semibold'>
+                    {profile.followersCount ?? 0}
+                  </span>{' '}
+                  {t('followers')}
+                </Link>
+                <Link
+                  href={`/profile/${profile.username}/following`}
+                  className='cursor-pointer text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+                >
+                  <span className='font-semibold'>
+                    {profile.followingCount ?? 0}
+                  </span>{' '}
+                  {t('following')}
+                </Link>
+              </div>
+
+              {!isMe && (
+                <div className='mt-4 flex items-start gap-2'>
+                  <FollowUser
+                    userId={profile.id}
+                    isFollowing={profile.isFollowing ?? false}
+                    username={profile.username}
+                  />
+                  <Button
+                    onClick={handleStartChat}
+                    disabled={chatLoading}
+                    variant='default'
+                    size='sm'
+                    className='flex items-center gap-2'
+                  >
+                    <MessageSquare className='h-4 w-4' />
+                    {t('writeMessage')}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
-          {!isMe && (
-            <div className='flex items-start'>
-              <Button
-                onClick={handleStartChat}
-                disabled={chatLoading}
-                variant='default'
-                size='sm'
-                className='flex items-center gap-2'
-              >
-                <MessageSquare className='h-4 w-4' />
-                {t('writeMessage')}
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>
