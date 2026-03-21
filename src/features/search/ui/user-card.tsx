@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Role } from '@/features/auth/types';
+import { isPrivilegedRole } from '@/features/auth/types';
 import {
   Avatar,
   AvatarFallback,
@@ -48,6 +48,8 @@ export function UserCard({ user }: UserCardProps) {
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
+      case 'SUPER_ADMIN':
+        return 'destructive';
       case 'ADMIN':
         return 'destructive';
       case 'USER':
@@ -87,7 +89,7 @@ export function UserCard({ user }: UserCardProps) {
           <div className='min-w-0 flex-1'>
             <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
               <span className='truncate font-semibold'>{displayName}</span>
-              {user.role === Role.ADMIN && (
+              {isPrivilegedRole(user.role) && (
                 <Badge
                   variant={getRoleBadgeVariant(user.role)}
                   className='shrink-0 text-[10px] uppercase tracking-wide'

@@ -542,6 +542,13 @@ export type DeleteProfileMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type DeleteProfileMutation = { __typename?: 'Mutation', deleteProfile: boolean };
 
+export type ChangeRoleMutationVariables = Exact<{
+  data: ChangeRoleInput;
+}>;
+
+
+export type ChangeRoleMutation = { __typename?: 'Mutation', changeRole: { __typename?: 'UserModel', id: string, role: string, username: string } };
+
 export type FindAllChatsByMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1190,6 +1197,41 @@ export function useDeleteProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteProfileMutationHookResult = ReturnType<typeof useDeleteProfileMutation>;
 export type DeleteProfileMutationResult = Apollo.MutationResult<DeleteProfileMutation>;
 export type DeleteProfileMutationOptions = Apollo.BaseMutationOptions<DeleteProfileMutation, DeleteProfileMutationVariables>;
+export const ChangeRoleDocument = gql`
+    mutation ChangeRole($data: ChangeRoleInput!) {
+  changeRole(data: $data) {
+    id
+    role
+    username
+  }
+}
+    `;
+export type ChangeRoleMutationFn = Apollo.MutationFunction<ChangeRoleMutation, ChangeRoleMutationVariables>;
+
+/**
+ * __useChangeRoleMutation__
+ *
+ * To run a mutation, you first call `useChangeRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeRoleMutation, { data, loading, error }] = useChangeRoleMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useChangeRoleMutation(baseOptions?: Apollo.MutationHookOptions<ChangeRoleMutation, ChangeRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangeRoleMutation, ChangeRoleMutationVariables>(ChangeRoleDocument, options);
+      }
+export type ChangeRoleMutationHookResult = ReturnType<typeof useChangeRoleMutation>;
+export type ChangeRoleMutationResult = Apollo.MutationResult<ChangeRoleMutation>;
+export type ChangeRoleMutationOptions = Apollo.BaseMutationOptions<ChangeRoleMutation, ChangeRoleMutationVariables>;
 export const FindAllChatsByMeDocument = gql`
     query FindAllChatsByMe {
   findAllChatsByMe {

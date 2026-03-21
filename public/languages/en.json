@@ -212,6 +212,14 @@
     "followers": "followers",
     "following": "following"
   },
+  "profileActionsMenu": {
+    "ariaLabel": "Profile menu",
+    "makeAdmin": "Make admin",
+    "removeAdmin": "Remove admin role",
+    "successAdmin": "User is now an admin",
+    "successUser": "Role changed to user",
+    "error": "Something went wrong"
+  },
   "follow": {
     "follow": "Follow",
     "unfollow": "Unfollow",

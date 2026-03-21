@@ -215,6 +215,14 @@
     "followers": "подписчиков",
     "following": "подписок"
   },
+  "profileActionsMenu": {
+    "ariaLabel": "Меню профиля",
+    "makeAdmin": "Назначить админом",
+    "removeAdmin": "Снять роль админа",
+    "successAdmin": "Пользователь назначен админом",
+    "successUser": "Роль изменена на пользователя",
+    "error": "Не удалось выполнить действие"
+  },
   "follow": {
     "follow": "Подписаться",
     "unfollow": "Отписаться",

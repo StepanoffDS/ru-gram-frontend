@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import type { ReactNode } from 'react';
 
 import { MessageSquare, PencilIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Role } from '@/features/auth/types';
+import { isPrivilegedRole } from '@/features/auth/types';
 import { FollowUser } from '@/features/follow/follow-user';
 import {
   useCreateOrFindChatMutation,
@@ -30,6 +31,8 @@ interface ProfileInfoProps {
   loading: boolean;
   error: Nullable<Error>;
   isMe?: boolean;
+  /** Верхний правый угол (доп. действия, например меню «⋯») */
+  trailingSlot?: ReactNode;
 }
 
 export function ProfileInfo({
@@ -37,6 +40,7 @@ export function ProfileInfo({
   loading,
   error,
   isMe,
+  trailingSlot,
 }: ProfileInfoProps) {
   const t = useTranslations('profileInfo');
   const router = useRouter();
@@ -97,8 +101,8 @@ export function ProfileInfo({
   return (
     <div className='border-b border-gray-200 dark:border-gray-800'>
       <div className='mx-auto max-w-4xl pb-4'>
-        <div className='flex justify-between'>
-          <div className='flex space-x-6'>
+        <div className='flex items-start justify-between gap-2'>
+          <div className='flex min-w-0 flex-1 space-x-6'>
             <div className='relative'>
               <Avatar className='h-24 w-24'>
                 {profile.avatar ? (
@@ -132,7 +136,7 @@ export function ProfileInfo({
                 <h1 className='text-md mb-0 truncate font-bold text-gray-900 md:text-2xl dark:text-white'>
                   {displayName}
                 </h1>
-                {profile.role === Role.ADMIN ? (
+                {isPrivilegedRole(profile.role) ? (
                   <span className='inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
                     {profile.role}
                   </span>
@@ -200,6 +204,9 @@ export function ProfileInfo({
               )}
             </div>
           </div>
+          {trailingSlot ? (
+            <div className='shrink-0 pt-0.5'>{trailingSlot}</div>
+          ) : null}
         </div>
       </div>
     </div>

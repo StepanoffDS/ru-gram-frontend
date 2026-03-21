@@ -1,5 +1,5 @@
 import { authStore } from '../store/auth.store';
-import { Role } from '../types';
+import { isPrivilegedRole, Role } from '../types';
 
 export function useAuth() {
   const {
@@ -16,7 +16,8 @@ export function useAuth() {
     setIsAuthenticated(false);
     setUserId(null);
   };
-  const isAdmin = role === Role.ADMIN;
+  const isAdmin = isPrivilegedRole(role);
+  const isSuperAdmin = role === Role.SUPER_ADMIN;
 
   return {
     isAuthenticated,
@@ -27,5 +28,6 @@ export function useAuth() {
     auth,
     exit,
     isAdmin,
+    isSuperAdmin,
   };
 }

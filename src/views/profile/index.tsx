@@ -6,6 +6,9 @@ import { useInView } from 'react-intersection-observer';
 
 import { ProfileInfo } from '@/entities/profile-info';
 import { ProfilePostsList } from '@/entities/profile-posts-list';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { Role } from '@/features/auth/types';
+import { ProfileActionsMenu } from '@/features/profile/profile-actions/ui/profile-actions-menu';
 import {
   useFindAllByUsernameQuery,
   useFindOneByUsernameQuery,
@@ -23,10 +26,11 @@ interface ProfilePageComponentProps {
 
 export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
   const t = useTranslations('profile');
+  const { isSuperAdmin } = useAuth();
   const [posts, setPosts] = useState<ListPost[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [currentSkip, setCurrentSkip] = useState(0);
-
+  console.log('isSuperAdmin', isSuperAdmin);
   const {
     data: profileData,
     loading: profileLoading,
@@ -96,13 +100,27 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
     return <div className='text-center text-gray-500'>{t('noProfile')}</div>;
   }
 
+  const viewed = profileData?.findOneByUsername;
+  console.log('viewed', viewed);
   return (
     <div className='flex flex-col gap-4'>
       <ProfileInfo
-        profile={profileData?.findOneByUsername as Nullable<UserModel>}
+        profile={viewed as Nullable<UserModel>}
         loading={profileLoading}
         error={profileError as Error}
-        isMe={profileData?.findOneByUsername?.isMe}
+        isMe={viewed?.isMe}
+        trailingSlot={
+          viewed &&
+          !viewed.isMe &&
+          isSuperAdmin &&
+          viewed.role !== Role.SUPER_ADMIN ? (
+            <ProfileActionsMenu
+              userId={viewed.id}
+              username={viewed.username}
+              currentRole={viewed.role}
+            />
+          ) : null
+        }
       />
       <ProfilePostsList
         posts={posts}
