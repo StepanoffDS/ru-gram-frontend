@@ -1,0 +1,3 @@
+mutation MarkChatAsRead($chatId: String!) {
+  markChatAsRead(chatId: $chatId)
+}

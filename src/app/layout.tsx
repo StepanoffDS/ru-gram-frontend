@@ -10,6 +10,8 @@ import { Toaster } from '@/shared/components/ui/sonner';
 
 import './globals.css';
 
+import { ChatNotificationsProvider } from '@/providers/chat-notifications-provider';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -49,14 +51,16 @@ export default async function RootLayout({
       >
         <ApolloClientProvider>
           <NextIntlClientProvider messages={messages}>
-            <ThemeProvider
-              attribute='class'
-              defaultTheme='system'
-              enableSystem
-            >
-              {children}
-              <Toaster />
-            </ThemeProvider>
+            <ChatNotificationsProvider>
+              <ThemeProvider
+                attribute='class'
+                defaultTheme='system'
+                enableSystem
+              >
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </ChatNotificationsProvider>
           </NextIntlClientProvider>
         </ApolloClientProvider>
       </body>

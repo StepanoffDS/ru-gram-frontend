@@ -9,6 +9,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/shared/components/ui/avatar';
+import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { cn } from '@/shared/libs/utils';
 
@@ -23,6 +24,7 @@ interface ChatItemProps {
     };
   } | null;
   currentUserId?: string;
+  unreadCount: number;
 }
 
 export function ChatItem({
@@ -30,9 +32,11 @@ export function ChatItem({
   users,
   lastMessage,
   currentUserId,
+  unreadCount,
 }: ChatItemProps) {
   const params = useParams();
   const isActive = params.chatId === id;
+  const displayUnread = Math.round(unreadCount);
 
   const otherUser = users.find((user) => user.id !== currentUserId) || users[0];
 
@@ -70,6 +74,11 @@ export function ChatItem({
               </div>
             )}
           </div>
+          {displayUnread > 0 && (
+            <Badge className='ml-2 px-2 py-0.5 text-xs'>
+              {displayUnread > 99 ? '99+' : displayUnread}
+            </Badge>
+          )}
         </CardContent>
       </Card>
     </Link>

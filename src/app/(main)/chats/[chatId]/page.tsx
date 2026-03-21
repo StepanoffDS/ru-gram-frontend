@@ -1,18 +1,21 @@
 'use client';
 
+import { useApolloClient } from '@apollo/client';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { MessageList } from '@/entities/message-list/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import {
+  FindAllChatsByMeDocument,
   FindMessagesByChatIdQuery,
   useCreateMessageMutation,
   useFindMessagesByChatIdQuery,
+  useMarkChatAsReadMutation,
   useMessageCreatedSubscription,
 } from '@/graphql/generated/output';
 import { PageHeader } from '@/shared/components/page-header';
@@ -28,8 +31,27 @@ export default function ChatPage() {
   const t = useTranslations('chats.chat');
   const { userId } = useAuth();
   const [message, setMessage] = useState('');
+  const client = useApolloClient();
   const [createMessage, { loading: sendingMessage }] =
     useCreateMessageMutation();
+  const [markChatAsReadMutation] = useMarkChatAsReadMutation();
+
+  const markChatAsReadAndSyncList = useCallback(
+    async (id: string) => {
+      try {
+        await markChatAsReadMutation({ variables: { chatId: id } });
+        await client.refetchQueries({ include: [FindAllChatsByMeDocument] });
+      } catch {
+        // сессия / сеть — список чатов обновим при следующем запросе
+      }
+    },
+    [client, markChatAsReadMutation],
+  );
+
+  useEffect(() => {
+    if (!chatId) return;
+    void markChatAsReadAndSyncList(chatId);
+  }, [chatId, markChatAsReadAndSyncList]);
 
   const { data, loading, error, updateQuery } = useFindMessagesByChatIdQuery({
     variables: {
@@ -48,7 +70,6 @@ export default function ChatPage() {
     },
     skip: !chatId,
     onData: ({ data: subscriptionData }) => {
-      console.log('subscriptionData', subscriptionData);
       if (subscriptionData.data?.messageCreated) {
         const newMessage = subscriptionData.data.messageCreated;
         updateQuery((prev) => {
@@ -69,6 +90,7 @@ export default function ChatPage() {
             findMessagesByChatId: [...prev.findMessagesByChatId, newMessage],
           };
         });
+        void markChatAsReadAndSyncList(chatId);
       }
     },
   });
@@ -88,8 +110,6 @@ export default function ChatPage() {
       },
     }));
   }, [data]);
-
-  console.log('messages', messages);
 
   const chatUser = useMemo(() => {
     if (messages.length > 0) {

@@ -1,0 +1,16 @@
+subscription MessageCreatedForUser {
+  messageCreatedForUser {
+    id
+    chatId
+    content
+    images
+    createdAt
+    updatedAt
+    user {
+      id
+      username
+      name
+      avatar
+    }
+  }
+}

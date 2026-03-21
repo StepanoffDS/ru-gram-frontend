@@ -1,8 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { RefObject, useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useTranslations } from 'next-intl';
 
 import { PostsList } from '@/entities/posts-list';
 import {
@@ -127,7 +127,14 @@ export default function MainPage() {
         },
       });
     }
-  }, [inViewAll, hasMoreAll, loadingAll, currentSkipAll, allPosts, fetchMoreAll]);
+  }, [
+    inViewAll,
+    hasMoreAll,
+    loadingAll,
+    currentSkipAll,
+    allPosts,
+    fetchMoreAll,
+  ]);
 
   // Загрузка больше постов для постов от подписок
   useEffect(() => {
@@ -166,7 +173,7 @@ export default function MainPage() {
   ]);
 
   return (
-    <div className='mx-auto max-w-4xl'>
+    <div>
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

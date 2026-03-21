@@ -12,15 +12,19 @@ import {
   UserIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { CreatePost } from '@/features/post/create-post';
-import { useLogoutUserMutation } from '@/graphql/generated/output';
+import {
+  useFindAllChatsByMeQuery,
+  useLogoutUserMutation,
+} from '@/graphql/generated/output';
 import { LanguageButtons } from '@/shared/components/language-buttons';
 import { Logo } from '@/shared/components/logo';
 import { ThemeToggleSwitch } from '@/shared/components/theme-toggle-switch';
+import { Badge } from '@/shared/components/ui/badge';
 import {
   Sidebar,
   SidebarContent,
@@ -37,8 +41,19 @@ export function MainSidebar() {
   const [isOpenCreatePost, setIsOpenCreatePost] = useState(false);
   const t = useTranslations('sidebar');
   const router = useRouter();
-  const { exit } = useAuth();
+  const { exit, isAuthenticated } = useAuth();
   const isMobile = useIsMobile();
+  const { data: chatsData } = useFindAllChatsByMeQuery({
+    skip: !isAuthenticated,
+  });
+  const totalUnreadMessages = useMemo(() => {
+    const list = chatsData?.findAllChatsByMe;
+    if (!list?.length) return 0;
+    return list.reduce(
+      (acc, chat) => acc + Math.round(chat.unreadCount),
+      0,
+    );
+  }, [chatsData]);
   const [logoutUser, { loading: isLoadingLogout }] = useLogoutUserMutation({
     onCompleted: () => {
       exit();
@@ -123,6 +138,11 @@ export function MainSidebar() {
                   <Link href='/chats'>
                     <MessageSquareIcon />
                     {t('menu.chats')}
+                    {totalUnreadMessages > 0 && (
+                      <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
+                        {totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}
+                      </Badge>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

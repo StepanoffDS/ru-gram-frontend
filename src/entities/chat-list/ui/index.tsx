@@ -68,6 +68,7 @@ export function ChatList({
           users={chat.users}
           lastMessage={chat.messages?.[0] || null}
           currentUserId={currentUserId}
+          unreadCount={chat.unreadCount}
         />
       ))}
     </div>

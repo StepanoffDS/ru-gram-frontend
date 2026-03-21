@@ -20,7 +20,7 @@ export function SearchTabs() {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   return (
-    <div className='mx-auto max-w-4xl'>
+    <div>
       <div className='mb-6'>
         <h1
           className='mb-4 text-2xl font-bold'

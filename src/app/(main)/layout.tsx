@@ -1,8 +1,8 @@
-import { MobileBottomNavigation } from '@/shared/components/mobile-bottom-navigation';
 import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/shared/components/ui/sidebar';
+import { MobileBottomNavigation } from '@/widget/mobile-bottom-navigation';
 import { MainSidebar } from '@/widget/sidebar';
 
 export default async function RootLayout({
