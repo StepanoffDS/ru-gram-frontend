@@ -11,6 +11,7 @@ import {
 } from '@/shared/components/ui/avatar';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { S3_URL } from '@/shared/constants/api.constants';
 import { cn } from '@/shared/libs/utils';
 
 interface ChatItemProps {
@@ -47,7 +48,7 @@ export function ChatItem({
       ? `${lastMessage.content.substring(0, 50)}...`
       : lastMessage.content
     : 'Нет сообщений';
-
+  console.log('otherUser', otherUser);
   return (
     <Link href={`/chats/${id}`}>
       <Card
@@ -59,7 +60,9 @@ export function ChatItem({
         <CardContent className='flex items-center gap-4 p-4'>
           <Avatar className='size-12'>
             <AvatarImage
-              src={otherUser.avatar || undefined}
+              src={
+                otherUser.avatar ? S3_URL + otherUser.avatar : undefined
+              }
               alt={displayName}
             />
             <AvatarFallback>

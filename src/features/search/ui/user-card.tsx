@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Role } from '@/features/auth/types';
@@ -13,6 +14,7 @@ import {
 import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { S3_URL } from '@/shared/constants/api.constants';
+import { cn } from '@/shared/libs/utils';
 
 interface User {
   id: string;
@@ -55,60 +57,65 @@ export function UserCard({ user }: UserCardProps) {
     }
   };
 
+  const displayName = user.name || user.username;
+
   return (
-    <Card className='transition-shadow hover:shadow-md'>
-      <CardContent className='p-4'>
-        <div className='flex items-start space-x-4'>
-          <Avatar className='h-12 w-12'>
+    <Link
+      href={`/profile/${user.username}`}
+      className='block'
+      aria-label={t('openProfile', { name: displayName })}
+    >
+      <Card
+        className={cn(
+          'hover:bg-accent cursor-pointer gap-0 py-0 transition-colors',
+        )}
+      >
+        <CardContent className='flex items-center gap-4 p-4'>
+          <Avatar className='ring-border size-14 shrink-0 ring-2'>
             {user.avatar ? (
               <AvatarImage
                 src={S3_URL + user.avatar}
-                alt={user.name || user.username}
+                alt={displayName}
               />
             ) : (
-              <AvatarFallback>
+              <AvatarFallback className='text-base'>
                 {getInitials(user.name || '', user.username)}
               </AvatarFallback>
             )}
           </Avatar>
 
           <div className='min-w-0 flex-1'>
-            <div className='mb-1 flex items-center space-x-2'>
-              <Link
-                href={`/profile/${user.username}`}
-                className='hover:text-primary text-lg font-semibold transition-colors'
-              >
-                {user.name || user.username}
-              </Link>
+            <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
+              <span className='truncate font-semibold'>{displayName}</span>
               {user.role === Role.ADMIN && (
                 <Badge
                   variant={getRoleBadgeVariant(user.role)}
-                  className='text-xs'
+                  className='shrink-0 text-[10px] uppercase tracking-wide'
                 >
                   {user.role}
                 </Badge>
               )}
             </div>
-
-            <p className='text-muted-foreground mb-2 text-sm'>
+            <p className='text-muted-foreground truncate text-sm'>
               @{user.username}
             </p>
-
-            {user.bio && (
-              <p className='text-muted-foreground line-clamp-2 text-sm'>
+            {user.bio ? (
+              <p className='text-muted-foreground mt-1 line-clamp-1 text-sm'>
                 {user.bio}
               </p>
-            )}
-
-            <div className='text-muted-foreground mt-3 flex items-center space-x-4 text-xs'>
-              <span>
-                {t('registered')}:{' '}
-                {new Date(user.createdAt).toLocaleDateString('ru-RU')}
-              </span>
-            </div>
+            ) : null}
+            <p className='text-muted-foreground mt-1.5 text-xs'>
+              {t('registered')}:{' '}
+              {new Date(user.createdAt).toLocaleDateString('ru-RU')}
+            </p>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          <ChevronRight
+            className='text-muted-foreground size-5 shrink-0'
+            aria-hidden
+          />
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

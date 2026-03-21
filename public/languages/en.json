@@ -117,7 +117,8 @@
     "usersNotFound": "Users not found"
   },
   "userCard": {
-    "registered": "Registered"
+    "registered": "Registered",
+    "openProfile": "Open profile: {name}"
   },
   "pageHeader": {
     "backButtonLabel": "Back"

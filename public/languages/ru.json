@@ -120,7 +120,8 @@
     "usersNotFound": "Пользователи не найдены"
   },
   "userCard": {
-    "registered": "Зарегистрирован"
+    "registered": "Зарегистрирован",
+    "openProfile": "Открыть профиль: {name}"
   },
   "pageHeader": {
     "backButtonLabel": "Назад"
