@@ -1,8 +1,8 @@
 'use client';
 
-import { useApolloClient } from '@apollo/client';
 import { usePathname, useRouter } from 'next/navigation';
 
+import { useApolloClient } from '@apollo/client';
 import { PropsWithChildren } from 'react';
 import { toast } from 'sonner';
 
@@ -22,6 +22,7 @@ export function ChatNotificationsProvider({
     onData: ({ data }) => {
       const msg = data?.data?.messageCreatedForUser;
       if (!msg) return;
+      const senderName = msg.user.name ?? msg.user.username;
 
       const onThisChatPage = pathname.startsWith(`/chats/${msg.chatId}`);
 
@@ -29,7 +30,7 @@ export function ChatNotificationsProvider({
 
       if (onThisChatPage) return;
 
-      toast(`Новое сообщение`, {
+      toast(`Новое сообщение от @${senderName}`, {
         description: msg.content,
         action: {
           label: 'Открыть',

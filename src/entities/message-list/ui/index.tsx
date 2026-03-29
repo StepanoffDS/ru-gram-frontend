@@ -12,6 +12,7 @@ interface Message {
   content: string;
   images: string[];
   createdAt: Date;
+  isReadByOtherUser: boolean;
   user: {
     id: string;
     username: string;

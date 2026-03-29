@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import {
   Avatar,
   AvatarFallback,
@@ -13,6 +15,7 @@ interface MessageItemProps {
   content: string;
   images: string[];
   createdAt: Date;
+  isReadByOtherUser: boolean;
   user: {
     id: string;
     username: string;
@@ -26,11 +29,17 @@ export function MessageItem({
   content,
   images,
   createdAt,
+  isReadByOtherUser,
   user,
   currentUserId,
 }: MessageItemProps) {
+  const t = useTranslations('chats.chat');
   const isOwnMessage = user.id === currentUserId;
   const displayName = user.name || user.username;
+  const formattedTime = new Date(createdAt).toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   return (
     <div className={cn('mb-4 flex gap-3', isOwnMessage && 'flex-row-reverse')}>
@@ -70,10 +79,9 @@ export function MessageItem({
           </CardContent>
         </Card>
         <span className='text-muted-foreground px-1 text-xs'>
-          {new Date(createdAt).toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+          {isOwnMessage
+            ? `${formattedTime} · ${isReadByOtherUser ? t('read') : t('unread')}`
+            : formattedTime}
         </span>
       </div>
     </div>

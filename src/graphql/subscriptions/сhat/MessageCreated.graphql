@@ -3,6 +3,7 @@ subscription MessageCreated($chatId: String!) {
     id
     content
     images
+    isReadByOtherUser
     createdAt
     updatedAt
     user {

@@ -50,6 +50,13 @@ export type ChatModel = {
   users: Array<UserModel>;
 };
 
+export type ChatReadUpdateModel = {
+  __typename?: 'ChatReadUpdateModel';
+  chatId: Scalars['ID']['output'];
+  lastReadAt: Scalars['DateTime']['output'];
+  userId: Scalars['ID']['output'];
+};
+
 export type CreateChatInput = {
   userIds: Array<Scalars['String']['input']>;
 };
@@ -116,6 +123,8 @@ export type MessageModel = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   images: Array<Scalars['String']['output']>;
+  /** Прочитано ли сообщение хотя бы одним другим участником чата */
+  isReadByOtherUser: Scalars['Boolean']['output'];
   updatedAt: Scalars['DateTime']['output'];
   user: UserModel;
   userId: Scalars['ID']['output'];
@@ -393,9 +402,15 @@ export type QueryIsFollowingArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  chatReadUpdated: ChatReadUpdateModel;
   messageCreated: MessageModel;
   messageCreatedForUser: MessageModel;
   messageDeleted: Scalars['String']['output'];
+};
+
+
+export type SubscriptionChatReadUpdatedArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -464,7 +479,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage: { __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } } };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage: { __typename?: 'MessageModel', id: string, content: string, images: Array<string>, isReadByOtherUser: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } } };
 
 export type CreateOrFindChatMutationVariables = Exact<{
   data: CreateChatInput;
@@ -560,7 +575,7 @@ export type FindMessagesByChatIdQueryVariables = Exact<{
 }>;
 
 
-export type FindMessagesByChatIdQuery = { __typename?: 'Query', findMessagesByChatId: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindMessagesByChatIdQuery = { __typename?: 'Query', findMessagesByChatId: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, isReadByOtherUser: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type FindAllByFollowingQueryVariables = Exact<{
   filter: FilterPostsInput;
@@ -649,12 +664,19 @@ export type FindOneByUsernameQueryVariables = Exact<{
 
 export type FindOneByUsernameQuery = { __typename?: 'Query', findOneByUsername: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, bio?: string | null, role: string, isMe: boolean, followersCount?: number | null, followingCount?: number | null, postsCount?: number | null, isFollowing?: boolean | null } };
 
+export type ChatReadUpdatedSubscriptionVariables = Exact<{
+  chatId: Scalars['String']['input'];
+}>;
+
+
+export type ChatReadUpdatedSubscription = { __typename?: 'Subscription', chatReadUpdated: { __typename?: 'ChatReadUpdateModel', chatId: string, userId: string, lastReadAt: any } };
+
 export type MessageCreatedSubscriptionVariables = Exact<{
   chatId: Scalars['String']['input'];
 }>;
 
 
-export type MessageCreatedSubscription = { __typename?: 'Subscription', messageCreated: { __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } } };
+export type MessageCreatedSubscription = { __typename?: 'Subscription', messageCreated: { __typename?: 'MessageModel', id: string, content: string, images: Array<string>, isReadByOtherUser: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } } };
 
 export type MessageCreatedForUserSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -768,6 +790,7 @@ export const CreateMessageDocument = gql`
     id
     content
     images
+    isReadByOtherUser
     createdAt
     updatedAt
     user {
@@ -1298,6 +1321,7 @@ export const FindMessagesByChatIdDocument = gql`
     id
     content
     images
+    isReadByOtherUser
     createdAt
     updatedAt
     user {
@@ -1944,12 +1968,45 @@ export type FindOneByUsernameQueryHookResult = ReturnType<typeof useFindOneByUse
 export type FindOneByUsernameLazyQueryHookResult = ReturnType<typeof useFindOneByUsernameLazyQuery>;
 export type FindOneByUsernameSuspenseQueryHookResult = ReturnType<typeof useFindOneByUsernameSuspenseQuery>;
 export type FindOneByUsernameQueryResult = Apollo.QueryResult<FindOneByUsernameQuery, FindOneByUsernameQueryVariables>;
+export const ChatReadUpdatedDocument = gql`
+    subscription ChatReadUpdated($chatId: String!) {
+  chatReadUpdated(chatId: $chatId) {
+    chatId
+    userId
+    lastReadAt
+  }
+}
+    `;
+
+/**
+ * __useChatReadUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useChatReadUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useChatReadUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChatReadUpdatedSubscription({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useChatReadUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ChatReadUpdatedSubscription, ChatReadUpdatedSubscriptionVariables> & ({ variables: ChatReadUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ChatReadUpdatedSubscription, ChatReadUpdatedSubscriptionVariables>(ChatReadUpdatedDocument, options);
+      }
+export type ChatReadUpdatedSubscriptionHookResult = ReturnType<typeof useChatReadUpdatedSubscription>;
+export type ChatReadUpdatedSubscriptionResult = Apollo.SubscriptionResult<ChatReadUpdatedSubscription>;
 export const MessageCreatedDocument = gql`
     subscription MessageCreated($chatId: String!) {
   messageCreated(chatId: $chatId) {
     id
     content
     images
+    isReadByOtherUser
     createdAt
     updatedAt
     user {

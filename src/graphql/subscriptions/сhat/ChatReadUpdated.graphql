@@ -1,0 +1,7 @@
+subscription ChatReadUpdated($chatId: String!) {
+  chatReadUpdated(chatId: $chatId) {
+    chatId
+    userId
+    lastReadAt
+  }
+}

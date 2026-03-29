@@ -277,6 +277,8 @@
       "errorLoading": "Error loading messages",
       "sendMessage": "Send message",
       "messagePlaceholder": "Type a message...",
+      "read": "Read",
+      "unread": "Unread",
       "sending": "Sending...",
       "emptyMessage": "Message cannot be empty",
       "errorSending": "Failed to send message"

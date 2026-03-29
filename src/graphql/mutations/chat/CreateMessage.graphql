@@ -3,6 +3,7 @@ mutation CreateMessage($chatId: String!, $data: CreateMessageInput!) {
     id
     content
     images
+    isReadByOtherUser
     createdAt
     updatedAt
     user {

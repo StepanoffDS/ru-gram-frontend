@@ -1,6 +1,6 @@
 'use client';
 
-import { useApolloClient } from '@apollo/client';
+import { gql, useApolloClient, useSubscription } from '@apollo/client';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Send } from 'lucide-react';
@@ -23,6 +23,28 @@ import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
 
 type Message = FindMessagesByChatIdQuery['findMessagesByChatId'][number];
+
+type ChatReadUpdatedSubscriptionData = {
+  chatReadUpdated: {
+    chatId: string;
+    userId: string;
+    lastReadAt: string;
+  };
+};
+
+type ChatReadUpdatedSubscriptionVariables = {
+  chatId: string;
+};
+
+const CHAT_READ_UPDATED_SUBSCRIPTION = gql`
+  subscription ChatReadUpdated($chatId: String!) {
+    chatReadUpdated(chatId: $chatId) {
+      chatId
+      userId
+      lastReadAt
+    }
+  }
+`;
 
 export default function ChatPage() {
   const params = useParams();
@@ -95,12 +117,51 @@ export default function ChatPage() {
     },
   });
 
+  useSubscription<
+    ChatReadUpdatedSubscriptionData,
+    ChatReadUpdatedSubscriptionVariables
+  >(CHAT_READ_UPDATED_SUBSCRIPTION, {
+    variables: { chatId },
+    skip: !chatId,
+    onData: ({ data: subscriptionData }) => {
+      const readUpdate = subscriptionData.data?.chatReadUpdated;
+      if (!readUpdate || readUpdate.userId === userId) {
+        return;
+      }
+
+      const readAt = new Date(readUpdate.lastReadAt);
+
+      updateQuery((prev) => {
+        if (!prev?.findMessagesByChatId) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          findMessagesByChatId: prev.findMessagesByChatId.map((msg) => {
+            if (msg.user.id !== userId) {
+              return msg;
+            }
+
+            if (msg.isReadByOtherUser) {
+              return msg;
+            }
+
+            const isReadNow = new Date(msg.createdAt) <= readAt;
+            return isReadNow ? { ...msg, isReadByOtherUser: true } : msg;
+          }),
+        };
+      });
+    },
+  });
+
   const messages = useMemo(() => {
     if (!data?.findMessagesByChatId) return [];
     return data.findMessagesByChatId.map((msg: Message) => ({
       id: msg.id,
       content: msg.content,
       images: msg.images,
+      isReadByOtherUser: msg.isReadByOtherUser,
       createdAt: new Date(msg.createdAt),
       user: {
         id: msg.user.id,
