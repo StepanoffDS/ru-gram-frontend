@@ -10,7 +10,6 @@ import {
   PlusIcon,
   SearchIcon,
   SettingsIcon,
-  UserIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -20,9 +19,15 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { CreatePost } from '@/features/post/create-post';
 import {
   useFindAllChatsByMeQuery,
+  useFindMeQuery,
   useLogoutUserMutation,
 } from '@/graphql/generated/output';
 import { Logo } from '@/shared/components/logo';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/shared/components/ui/avatar';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Sidebar,
@@ -34,7 +39,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/shared/components/ui/sidebar';
+import { S3_URL } from '@/shared/constants/api.constants';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { getInitials } from '@/shared/utils/get-initials';
 
 export function MainSidebar() {
   const [isOpenCreatePost, setIsOpenCreatePost] = useState(false);
@@ -45,11 +52,21 @@ export function MainSidebar() {
   const { data: chatsData } = useFindAllChatsByMeQuery({
     skip: !isAuthenticated,
   });
+  const { data: meData } = useFindMeQuery({
+    skip: !isAuthenticated,
+  });
   const totalUnreadMessages = useMemo(() => {
     const list = chatsData?.findAllChatsByMe;
     if (!list?.length) return 0;
     return list.reduce((acc, chat) => acc + Math.round(chat.unreadCount), 0);
   }, [chatsData]);
+  const profileLogin = meData?.findMe?.username
+    ? `@${meData.findMe.username}`
+    : t('menu.profile');
+  const profileName = meData?.findMe?.name || meData?.findMe?.username;
+  const hasProfileName = Boolean(
+    meData?.findMe?.name && meData.findMe.name !== meData.findMe.username,
+  );
   const [logoutUser, { loading: isLoadingLogout }] = useLogoutUserMutation({
     onCompleted: () => {
       exit();
@@ -107,9 +124,14 @@ export function MainSidebar() {
                   size='lg'
                   asChild={true}
                 >
-                  <Link href='/profile/me'>
-                    <UserIcon />
-                    {t('menu.profile')}
+                  <Link href='/chats'>
+                    <MessageSquareIcon />
+                    {t('menu.chats')}
+                    {totalUnreadMessages > 0 && (
+                      <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
+                        {totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}
+                      </Badge>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -131,23 +153,6 @@ export function MainSidebar() {
                   size='lg'
                   asChild={true}
                 >
-                  <Link href='/chats'>
-                    <MessageSquareIcon />
-                    {t('menu.chats')}
-                    {totalUnreadMessages > 0 && (
-                      <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
-                        {totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}
-                      </Badge>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  size='lg'
-                  asChild={true}
-                >
                   <Link href='/settings'>
                     <SettingsIcon />
                     {t('menu.settings')}
@@ -159,6 +164,36 @@ export function MainSidebar() {
         </SidebarContent>
         <SidebarFooter className='p-2'>
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size='lg'
+                asChild={true}
+              >
+                <Link href='/profile/me'>
+                  <Avatar className='size-7'>
+                    {meData?.findMe?.avatar ? (
+                      <AvatarImage
+                        src={S3_URL + meData.findMe.avatar}
+                        alt={profileName || t('menu.profile')}
+                        className='object-cover'
+                      />
+                    ) : (
+                      <AvatarFallback>
+                        {getInitials(profileName || t('menu.profile'))}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <span className='flex min-w-0 flex-col leading-tight'>
+                    {hasProfileName ? (
+                      <span className='truncate font-medium'>{profileName}</span>
+                    ) : null}
+                    <span className='truncate text-xs text-muted-foreground'>
+                      {profileLogin}
+                    </span>
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 size='lg'

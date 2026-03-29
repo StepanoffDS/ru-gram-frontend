@@ -52,10 +52,7 @@ export function MobileBottomNavigation({
   const totalUnreadMessages = useMemo(() => {
     const list = chatsData?.findAllChatsByMe;
     if (!list?.length) return 0;
-    return list.reduce(
-      (acc, chat) => acc + Math.round(chat.unreadCount),
-      0,
-    );
+    return list.reduce((acc, chat) => acc + Math.round(chat.unreadCount), 0);
   }, [chatsData]);
 
   const [logoutUser, { loading: isLoadingLogout }] = useLogoutUserMutation({
@@ -104,37 +101,23 @@ export function MobileBottomNavigation({
             asChild
             className='flex h-auto flex-col items-center gap-1 px-3 py-2'
           >
-            <Link href='/'>
-              <HomeIcon className='h-7 w-7' />
-              <span className='hidden text-xs sm:block'>{t('menu.home')}</span>
-            </Link>
-          </Button>
-
-          <Button
-            variant='ghost'
-            size='sm'
-            asChild
-            className='flex h-auto flex-col items-center gap-1 px-3 py-2'
-          >
-            <Link href='/profile/me'>
-              <UserIcon className='h-7 w-7' />
-              <span className='hidden text-xs sm:block'>
-                {t('menu.profile')}
-              </span>
-            </Link>
-          </Button>
-
-          <Button
-            variant='ghost'
-            size='sm'
-            asChild
-            className='flex h-auto flex-col items-center gap-1 px-3 py-2'
-          >
             <Link href='/search'>
               <SearchIcon className='h-7 w-7' />
               <span className='hidden text-xs sm:block'>
                 {t('menu.search')}
               </span>
+            </Link>
+          </Button>
+
+          <Button
+            variant='ghost'
+            size='sm'
+            asChild
+            className='flex h-auto flex-col items-center gap-1 px-3 py-2'
+          >
+            <Link href='/'>
+              <HomeIcon className='h-7 w-7' />
+              <span className='hidden text-xs sm:block'>{t('menu.home')}</span>
             </Link>
           </Button>
 
@@ -152,6 +135,20 @@ export function MobileBottomNavigation({
                   {totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}
                 </Badge>
               )}
+            </Link>
+          </Button>
+
+          <Button
+            variant='ghost'
+            size='sm'
+            asChild
+            className='flex h-auto flex-col items-center gap-1 px-3 py-2'
+          >
+            <Link href='/profile/me'>
+              <UserIcon className='h-7 w-7' />
+              <span className='hidden text-xs sm:block'>
+                {t('menu.profile')}
+              </span>
             </Link>
           </Button>
 
