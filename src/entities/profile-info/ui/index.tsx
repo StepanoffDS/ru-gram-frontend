@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
 
 import { MessageSquare, PencilIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
-import { isPrivilegedRole } from '@/features/auth/types';
 import { FollowUser } from '@/features/follow/follow-user';
 import {
   useCreateOrFindChatMutation,
@@ -18,11 +17,18 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/shared/components/ui/avatar';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { S3_URL } from '@/shared/constants/api.constants';
 import { Nullable } from '@/shared/libs/types';
 import { getInitials } from '@/shared/utils/get-initials';
+import {
+  getRoleBadgeClassName,
+  getRoleBadgeNameVariant,
+  getRoleBadgeVariant,
+  shouldShowRoleBadge,
+} from '@/shared/utils/role';
 
 import { copyProfileLink } from '../utils';
 
@@ -136,10 +142,13 @@ export function ProfileInfo({
                 <h1 className='text-md mb-0 truncate font-bold text-gray-900 md:text-2xl dark:text-white'>
                   {displayName}
                 </h1>
-                {isPrivilegedRole(profile.role) ? (
-                  <span className='inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
-                    {profile.role}
-                  </span>
+                {shouldShowRoleBadge(profile.role) ? (
+                  <Badge
+                    variant={getRoleBadgeVariant(profile.role)}
+                    className={`shrink-0 text-[10px] tracking-wide uppercase ${getRoleBadgeClassName(profile.role)}`}
+                  >
+                    {getRoleBadgeNameVariant(profile.role)}
+                  </Badge>
                 ) : null}
               </div>
 

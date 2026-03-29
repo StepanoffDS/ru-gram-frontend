@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { isPrivilegedRole } from '@/features/auth/types';
 import {
   Avatar,
   AvatarFallback,
@@ -15,6 +14,12 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { S3_URL } from '@/shared/constants/api.constants';
 import { cn } from '@/shared/libs/utils';
+import {
+  getRoleBadgeClassName,
+  getRoleBadgeNameVariant,
+  getRoleBadgeVariant,
+  shouldShowRoleBadge,
+} from '@/shared/utils/role';
 
 interface User {
   id: string;
@@ -44,19 +49,6 @@ export function UserCard({ user }: UserCardProps) {
         .slice(0, 2);
     }
     return username.slice(0, 2).toUpperCase();
-  };
-
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case 'SUPER_ADMIN':
-        return 'destructive';
-      case 'ADMIN':
-        return 'destructive';
-      case 'USER':
-        return 'default';
-      default:
-        return 'secondary';
-    }
   };
 
   const displayName = user.name || user.username;
@@ -89,12 +81,12 @@ export function UserCard({ user }: UserCardProps) {
           <div className='min-w-0 flex-1'>
             <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
               <span className='truncate font-semibold'>{displayName}</span>
-              {isPrivilegedRole(user.role) && (
+              {shouldShowRoleBadge(user.role) && (
                 <Badge
                   variant={getRoleBadgeVariant(user.role)}
-                  className='shrink-0 text-[10px] uppercase tracking-wide'
+                  className={`shrink-0 text-[10px] tracking-wide uppercase ${getRoleBadgeClassName(user.role)}`}
                 >
-                  {user.role}
+                  {getRoleBadgeNameVariant(user.role)}
                 </Badge>
               )}
             </div>
