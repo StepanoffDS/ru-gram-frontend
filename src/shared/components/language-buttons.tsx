@@ -2,9 +2,20 @@
 
 import { useEffect, useState } from 'react';
 
-import { COOKIE_NAME, defaultLanguage, Language, languages } from '@/shared/libs/i18n/config';
-
-import { cn } from '../libs/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import {
+  COOKIE_NAME,
+  defaultLanguage,
+  Language,
+  languages,
+} from '@/shared/libs/i18n/config';
+import { cn } from '@/shared/libs/utils';
 
 interface LanguageButtonsProps {
   className?: string;
@@ -18,7 +29,9 @@ export function LanguageButtons({ className }: LanguageButtonsProps) {
     setMounted(true);
     // Get current locale from cookie
     const cookies = document.cookie.split(';');
-    const languageCookie = cookies.find((cookie) => cookie.trim().startsWith(`${COOKIE_NAME}=`));
+    const languageCookie = cookies.find((cookie) =>
+      cookie.trim().startsWith(`${COOKIE_NAME}=`),
+    );
     if (languageCookie) {
       const value = languageCookie.split('=')[1];
       if (languages.includes(value as Language)) {
@@ -40,24 +53,26 @@ export function LanguageButtons({ className }: LanguageButtonsProps) {
   }
 
   return (
-    <div className={cn('flex gap-2', className)}>
-      {languages.map((lang) => {
-        const isActive = lang === currentLocale;
-        return (
-          <button
+    <Select
+      value={currentLocale}
+      onValueChange={(value) => handleLanguageChange(value as Language)}
+    >
+      <SelectTrigger
+        className={cn(className, 'h-8 w-36')}
+        aria-label='Language selector'
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent align='end'>
+        {languages.map((lang) => (
+          <SelectItem
             key={lang}
-            onClick={() => handleLanguageChange(lang)}
-            className={`flex-1 rounded-md px-2 py-1 text-sm font-medium transition-colors ${
-              isActive
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-accent text-accent-foreground hover:bg-accent/80'
-            }`}
-            aria-label={`Switch to ${lang.toUpperCase()}`}
+            value={lang}
           >
-            {lang.toUpperCase()}
-          </button>
-        );
-      })}
-    </div>
+            {lang === 'ru' ? 'Русский' : lang === 'en' ? 'English' : null}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

@@ -7,15 +7,14 @@ import {
   HomeIcon,
   LogOutIcon,
   MessageSquareIcon,
-  Moon,
   MoreHorizontalIcon,
   PlusIcon,
   SearchIcon,
+  SettingsIcon,
   UserIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -24,7 +23,6 @@ import {
   useFindAllChatsByMeQuery,
   useLogoutUserMutation,
 } from '@/graphql/generated/output';
-import { LanguageButtons } from '@/shared/components/language-buttons';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -174,8 +172,12 @@ export function MobileBottomNavigation({
               align='end'
               className='w-56'
             >
-              <LanguageButtons className='mb-1' />
-              <ThemeToggleItem />
+              <DropdownMenuItem asChild>
+                <Link href='/settings'>
+                  <SettingsIcon className='mr-2 h-4 w-4' />
+                  {t('menu.settings')}
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleLogout}
                 disabled={isLoadingLogout}
@@ -194,46 +196,5 @@ export function MobileBottomNavigation({
         setIsOpen={setIsOpenCreatePost}
       />
     </>
-  );
-}
-
-function ThemeToggleItem() {
-  const t = useTranslations('themeToggleSwitch');
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <DropdownMenuItem disabled>
-        <Moon className='mr-2 h-4 w-4' />
-        {t('theme')}
-      </DropdownMenuItem>
-    );
-  }
-
-  const isDark = theme === 'dark';
-
-  return (
-    <DropdownMenuItem onClick={() => setTheme(isDark ? 'light' : 'dark')}>
-      <Moon className='mr-2 h-4 w-4' />
-      {t('theme')}
-      <div
-        className={cn(
-          'ml-auto inline-flex h-4 w-7 items-center rounded-full transition-colors',
-          isDark ? 'bg-blue-600' : 'bg-gray-200',
-        )}
-      >
-        <span
-          className={cn(
-            'inline-block h-3 w-3 transform rounded-full bg-white transition-transform',
-            isDark ? 'translate-x-3' : 'translate-x-0.5',
-          )}
-        />
-      </div>
-    </DropdownMenuItem>
   );
 }

@@ -9,6 +9,7 @@ import {
   MessageSquareIcon,
   PlusIcon,
   SearchIcon,
+  SettingsIcon,
   UserIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -21,9 +22,7 @@ import {
   useFindAllChatsByMeQuery,
   useLogoutUserMutation,
 } from '@/graphql/generated/output';
-import { LanguageButtons } from '@/shared/components/language-buttons';
 import { Logo } from '@/shared/components/logo';
-import { ThemeToggleSwitch } from '@/shared/components/theme-toggle-switch';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Sidebar,
@@ -49,10 +48,7 @@ export function MainSidebar() {
   const totalUnreadMessages = useMemo(() => {
     const list = chatsData?.findAllChatsByMe;
     if (!list?.length) return 0;
-    return list.reduce(
-      (acc, chat) => acc + Math.round(chat.unreadCount),
-      0,
-    );
+    return list.reduce((acc, chat) => acc + Math.round(chat.unreadCount), 0);
   }, [chatsData]);
   const [logoutUser, { loading: isLoadingLogout }] = useLogoutUserMutation({
     onCompleted: () => {
@@ -65,8 +61,8 @@ export function MainSidebar() {
     },
   });
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
   };
 
   if (isMobile) {
@@ -146,15 +142,23 @@ export function MainSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size='lg'
+                  asChild={true}
+                >
+                  <Link href='/settings'>
+                    <SettingsIcon />
+                    {t('menu.settings')}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarContent>
         <SidebarFooter className='p-2'>
           <SidebarMenu>
-            <LanguageButtons />
-            <SidebarMenuItem>
-              <ThemeToggleSwitch />
-            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 size='lg'

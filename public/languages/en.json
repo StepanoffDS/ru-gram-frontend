@@ -63,14 +63,25 @@
       "profile": "My profile",
       "search": "Search",
       "chats": "Chats",
+      "settings": "Settings",
       "other": "Other",
       "logout": "Logout",
       "loadingLogout": "Logout..."
     }
   },
+  "settingsPage": {
+    "title": "Settings",
+    "languageTitle": "Language",
+    "languageDescription": "Choose the application interface language.",
+    "themeTitle": "Theme",
+    "themeDescription": "Choose light, dark, or system theme."
+  },
   "themeToggleSwitch": {
     "ariaLabel": "Toggle theme",
-    "theme": "Dark theme"
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "createPostModal": {
     "title": "Create post",

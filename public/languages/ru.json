@@ -63,14 +63,25 @@
       "profile": "Мой профиль",
       "search": "Поиск",
       "chats": "Чаты",
+      "settings": "Настройки",
       "other": "Другое",
       "logout": "Выйти",
       "loadingLogout": "Выход..."
     }
   },
+  "settingsPage": {
+    "title": "Настройки",
+    "languageTitle": "Язык",
+    "languageDescription": "Выберите язык интерфейса приложения.",
+    "themeTitle": "Тема",
+    "themeDescription": "Выберите светлую, темную или системную тему."
+  },
   "themeToggleSwitch": {
     "ariaLabel": "Переключить тему",
-    "theme": "Темная тема"
+    "theme": "Тема",
+    "light": "Светлая",
+    "dark": "Темная",
+    "system": "Системная"
   },
   "createPostModal": {
     "title": "Создать пост",

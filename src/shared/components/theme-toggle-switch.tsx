@@ -5,8 +5,13 @@ import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import { SidebarMenuButton } from '@/shared/components/ui/sidebar';
-import { cn } from '@/shared/libs/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 
 export function ThemeToggleSwitch() {
   const t = useTranslations('themeToggleSwitch');
@@ -19,45 +24,32 @@ export function ThemeToggleSwitch() {
 
   if (!mounted) {
     return (
-      <SidebarMenuButton
-        size='lg'
-        className='w-full'
-      >
+      <div className='flex w-full items-center gap-2 rounded-md p-2 text-sm'>
         <Moon className='size-4' />
         {t('theme')}
-        <div className='relative ml-auto inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700'>
-          <div className='h-3 w-3 translate-x-1 rounded-full bg-white transition-transform dark:translate-x-5' />
-        </div>
-      </SidebarMenuButton>
+        <span className='text-muted-foreground ml-auto'>{t('system')}</span>
+      </div>
     );
   }
 
-  const isDark = theme === 'dark';
+  const currentTheme = theme ?? 'system';
 
   return (
-    <SidebarMenuButton
-      size='lg'
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className='w-full'
-      role='switch'
-      aria-checked={isDark}
-      aria-label={t('ariaLabel')}
+    <Select
+      value={currentTheme}
+      onValueChange={(value) => setTheme(value)}
     >
-      <Moon className='size-4' />
-      {t('theme')}
-      <div
-        className={cn(
-          'relative ml-auto inline-flex h-5 w-9 items-center rounded-full transition-colors',
-          isDark ? 'bg-blue-600' : 'bg-gray-200',
-        )}
+      <SelectTrigger
+        aria-label={t('ariaLabel')}
+        className='ml-auto h-8 w-36'
       >
-        <span
-          className={cn(
-            'inline-block h-3 w-3 transform rounded-full bg-white transition-transform',
-            isDark ? 'translate-x-5' : 'translate-x-1',
-          )}
-        />
-      </div>
-    </SidebarMenuButton>
+        <SelectValue placeholder={t('system')} />
+      </SelectTrigger>
+      <SelectContent align='end'>
+        <SelectItem value='light'>{t('light')}</SelectItem>
+        <SelectItem value='dark'>{t('dark')}</SelectItem>
+        <SelectItem value='system'>{t('system')}</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
