@@ -3,6 +3,7 @@ query FindAllChatsByMe {
     id
     createdAt
     updatedAt
+    isImportant
     unreadCount
     users {
       id

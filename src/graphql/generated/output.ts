@@ -44,6 +44,7 @@ export type ChatModel = {
   __typename?: 'ChatModel';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  isImportant: Scalars['Boolean']['output'];
   messages: Array<MessageModel>;
   unreadCount: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -141,10 +142,12 @@ export type Mutation = {
   changePassword: Scalars['Boolean']['output'];
   changeProfileInfo: Scalars['Boolean']['output'];
   changeRole: UserModel;
+  clearChatHistory: Scalars['Boolean']['output'];
   createMessage: MessageModel;
   createOrFindChat: ChatModel;
   createPost: PostModel;
   createUser: Scalars['Boolean']['output'];
+  deleteChat: Scalars['Boolean']['output'];
   deleteMessage: Scalars['Boolean']['output'];
   deletePost: Scalars['Boolean']['output'];
   deleteProfile: Scalars['Boolean']['output'];
@@ -152,6 +155,7 @@ export type Mutation = {
   loginUser: UserModel;
   logoutUser: Scalars['String']['output'];
   markChatAsRead: Scalars['Boolean']['output'];
+  setChatImportant: Scalars['Boolean']['output'];
   toggleHidePost: PostModel;
   toggleLikePost: LikeResponseModel;
   unfollowUser: Scalars['Boolean']['output'];
@@ -179,6 +183,11 @@ export type MutationChangeRoleArgs = {
 };
 
 
+export type MutationClearChatHistoryArgs = {
+  chatId: Scalars['String']['input'];
+};
+
+
 export type MutationCreateMessageArgs = {
   chatId: Scalars['String']['input'];
   data: CreateMessageInput;
@@ -197,6 +206,11 @@ export type MutationCreatePostArgs = {
 
 export type MutationCreateUserArgs = {
   data: CreateUserInput;
+};
+
+
+export type MutationDeleteChatArgs = {
+  chatId: Scalars['String']['input'];
 };
 
 
@@ -222,6 +236,12 @@ export type MutationLoginUserArgs = {
 
 export type MutationMarkChatAsReadArgs = {
   chatId: Scalars['String']['input'];
+};
+
+
+export type MutationSetChatImportantArgs = {
+  chatId: Scalars['String']['input'];
+  isImportant: Scalars['Boolean']['input'];
 };
 
 
@@ -473,6 +493,13 @@ export type LogoutUserMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutUserMutation = { __typename?: 'Mutation', logoutUser: string };
 
+export type ClearChatHistoryMutationVariables = Exact<{
+  chatId: Scalars['String']['input'];
+}>;
+
+
+export type ClearChatHistoryMutation = { __typename?: 'Mutation', clearChatHistory: boolean };
+
 export type CreateMessageMutationVariables = Exact<{
   chatId: Scalars['String']['input'];
   data: CreateMessageInput;
@@ -488,12 +515,27 @@ export type CreateOrFindChatMutationVariables = Exact<{
 
 export type CreateOrFindChatMutation = { __typename?: 'Mutation', createOrFindChat: { __typename?: 'ChatModel', id: string, createdAt: any, updatedAt: any, users: Array<{ __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null }>, messages: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> } };
 
+export type DeleteChatMutationVariables = Exact<{
+  chatId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteChatMutation = { __typename?: 'Mutation', deleteChat: boolean };
+
 export type MarkChatAsReadMutationVariables = Exact<{
   chatId: Scalars['String']['input'];
 }>;
 
 
 export type MarkChatAsReadMutation = { __typename?: 'Mutation', markChatAsRead: boolean };
+
+export type SetChatImportantMutationVariables = Exact<{
+  chatId: Scalars['String']['input'];
+  isImportant: Scalars['Boolean']['input'];
+}>;
+
+
+export type SetChatImportantMutation = { __typename?: 'Mutation', setChatImportant: boolean };
 
 export type FollowUserMutationVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -567,7 +609,7 @@ export type ChangeRoleMutation = { __typename?: 'Mutation', changeRole: { __type
 export type FindAllChatsByMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindAllChatsByMeQuery = { __typename?: 'Query', findAllChatsByMe: Array<{ __typename?: 'ChatModel', id: string, createdAt: any, updatedAt: any, unreadCount: number, users: Array<{ __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null }>, messages: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> }> };
+export type FindAllChatsByMeQuery = { __typename?: 'Query', findAllChatsByMe: Array<{ __typename?: 'ChatModel', id: string, createdAt: any, updatedAt: any, isImportant: boolean, unreadCount: number, users: Array<{ __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null }>, messages: Array<{ __typename?: 'MessageModel', id: string, content: string, images: Array<string>, createdAt: any, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> }> };
 
 export type FindMessagesByChatIdQueryVariables = Exact<{
   chatId: Scalars['String']['input'];
@@ -784,6 +826,37 @@ export function useLogoutUserMutation(baseOptions?: Apollo.MutationHookOptions<L
 export type LogoutUserMutationHookResult = ReturnType<typeof useLogoutUserMutation>;
 export type LogoutUserMutationResult = Apollo.MutationResult<LogoutUserMutation>;
 export type LogoutUserMutationOptions = Apollo.BaseMutationOptions<LogoutUserMutation, LogoutUserMutationVariables>;
+export const ClearChatHistoryDocument = gql`
+    mutation ClearChatHistory($chatId: String!) {
+  clearChatHistory(chatId: $chatId)
+}
+    `;
+export type ClearChatHistoryMutationFn = Apollo.MutationFunction<ClearChatHistoryMutation, ClearChatHistoryMutationVariables>;
+
+/**
+ * __useClearChatHistoryMutation__
+ *
+ * To run a mutation, you first call `useClearChatHistoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useClearChatHistoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [clearChatHistoryMutation, { data, loading, error }] = useClearChatHistoryMutation({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useClearChatHistoryMutation(baseOptions?: Apollo.MutationHookOptions<ClearChatHistoryMutation, ClearChatHistoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ClearChatHistoryMutation, ClearChatHistoryMutationVariables>(ClearChatHistoryDocument, options);
+      }
+export type ClearChatHistoryMutationHookResult = ReturnType<typeof useClearChatHistoryMutation>;
+export type ClearChatHistoryMutationResult = Apollo.MutationResult<ClearChatHistoryMutation>;
+export type ClearChatHistoryMutationOptions = Apollo.BaseMutationOptions<ClearChatHistoryMutation, ClearChatHistoryMutationVariables>;
 export const CreateMessageDocument = gql`
     mutation CreateMessage($chatId: String!, $data: CreateMessageInput!) {
   createMessage(chatId: $chatId, data: $data) {
@@ -882,6 +955,37 @@ export function useCreateOrFindChatMutation(baseOptions?: Apollo.MutationHookOpt
 export type CreateOrFindChatMutationHookResult = ReturnType<typeof useCreateOrFindChatMutation>;
 export type CreateOrFindChatMutationResult = Apollo.MutationResult<CreateOrFindChatMutation>;
 export type CreateOrFindChatMutationOptions = Apollo.BaseMutationOptions<CreateOrFindChatMutation, CreateOrFindChatMutationVariables>;
+export const DeleteChatDocument = gql`
+    mutation DeleteChat($chatId: String!) {
+  deleteChat(chatId: $chatId)
+}
+    `;
+export type DeleteChatMutationFn = Apollo.MutationFunction<DeleteChatMutation, DeleteChatMutationVariables>;
+
+/**
+ * __useDeleteChatMutation__
+ *
+ * To run a mutation, you first call `useDeleteChatMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteChatMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteChatMutation, { data, loading, error }] = useDeleteChatMutation({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *   },
+ * });
+ */
+export function useDeleteChatMutation(baseOptions?: Apollo.MutationHookOptions<DeleteChatMutation, DeleteChatMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteChatMutation, DeleteChatMutationVariables>(DeleteChatDocument, options);
+      }
+export type DeleteChatMutationHookResult = ReturnType<typeof useDeleteChatMutation>;
+export type DeleteChatMutationResult = Apollo.MutationResult<DeleteChatMutation>;
+export type DeleteChatMutationOptions = Apollo.BaseMutationOptions<DeleteChatMutation, DeleteChatMutationVariables>;
 export const MarkChatAsReadDocument = gql`
     mutation MarkChatAsRead($chatId: String!) {
   markChatAsRead(chatId: $chatId)
@@ -913,6 +1017,38 @@ export function useMarkChatAsReadMutation(baseOptions?: Apollo.MutationHookOptio
 export type MarkChatAsReadMutationHookResult = ReturnType<typeof useMarkChatAsReadMutation>;
 export type MarkChatAsReadMutationResult = Apollo.MutationResult<MarkChatAsReadMutation>;
 export type MarkChatAsReadMutationOptions = Apollo.BaseMutationOptions<MarkChatAsReadMutation, MarkChatAsReadMutationVariables>;
+export const SetChatImportantDocument = gql`
+    mutation SetChatImportant($chatId: String!, $isImportant: Boolean!) {
+  setChatImportant(chatId: $chatId, isImportant: $isImportant)
+}
+    `;
+export type SetChatImportantMutationFn = Apollo.MutationFunction<SetChatImportantMutation, SetChatImportantMutationVariables>;
+
+/**
+ * __useSetChatImportantMutation__
+ *
+ * To run a mutation, you first call `useSetChatImportantMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetChatImportantMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setChatImportantMutation, { data, loading, error }] = useSetChatImportantMutation({
+ *   variables: {
+ *      chatId: // value for 'chatId'
+ *      isImportant: // value for 'isImportant'
+ *   },
+ * });
+ */
+export function useSetChatImportantMutation(baseOptions?: Apollo.MutationHookOptions<SetChatImportantMutation, SetChatImportantMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetChatImportantMutation, SetChatImportantMutationVariables>(SetChatImportantDocument, options);
+      }
+export type SetChatImportantMutationHookResult = ReturnType<typeof useSetChatImportantMutation>;
+export type SetChatImportantMutationResult = Apollo.MutationResult<SetChatImportantMutation>;
+export type SetChatImportantMutationOptions = Apollo.BaseMutationOptions<SetChatImportantMutation, SetChatImportantMutationVariables>;
 export const FollowUserDocument = gql`
     mutation FollowUser($userId: String!) {
   followUser(userId: $userId)
@@ -1261,6 +1397,7 @@ export const FindAllChatsByMeDocument = gql`
     id
     createdAt
     updatedAt
+    isImportant
     unreadCount
     users {
       id

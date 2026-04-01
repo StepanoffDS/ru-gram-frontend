@@ -9,6 +9,7 @@ import {
   CardContent,
   CardDescription,
 } from '@/shared/components/ui/card';
+import { Separator } from '@/shared/components/ui/separator';
 
 import { ChatItem } from './chat-item';
 
@@ -26,6 +27,11 @@ export function ChatList({
   currentUserId,
 }: ChatListProps) {
   const t = useTranslations('chats');
+  const chatsByUpdatedAt = [...chats].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
+  const importantChats = chatsByUpdatedAt.filter((chat) => chat.isImportant);
+  const regularChats = chatsByUpdatedAt.filter((chat) => !chat.isImportant);
 
   if (loading && chats.length === 0) {
     return (
@@ -61,7 +67,7 @@ export function ChatList({
 
   return (
     <div className='flex flex-col gap-2'>
-      {chats.map((chat) => (
+      {importantChats.map((chat) => (
         <ChatItem
           key={chat.id}
           id={chat.id}
@@ -69,6 +75,23 @@ export function ChatList({
           lastMessage={chat.messages?.[0] || null}
           currentUserId={currentUserId}
           unreadCount={chat.unreadCount}
+          isImportant={chat.isImportant}
+        />
+      ))}
+
+      {importantChats.length > 0 && regularChats.length > 0 ? (
+        <Separator className='my-1' />
+      ) : null}
+
+      {regularChats.map((chat) => (
+        <ChatItem
+          key={chat.id}
+          id={chat.id}
+          users={chat.users}
+          lastMessage={chat.messages?.[0] || null}
+          currentUserId={currentUserId}
+          unreadCount={chat.unreadCount}
+          isImportant={chat.isImportant}
         />
       ))}
     </div>
