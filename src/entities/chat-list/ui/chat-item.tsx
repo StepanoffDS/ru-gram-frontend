@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -13,6 +15,16 @@ import {
   useDeleteChatMutation,
   useSetChatImportantMutation,
 } from '@/graphql/generated/output';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/components/ui/alert-dialog';
 import {
   Avatar,
   AvatarFallback,
@@ -57,6 +69,9 @@ export function ChatItem({
   const params = useParams();
   const router = useRouter();
   const t = useTranslations('chats');
+  const [pendingAction, setPendingAction] = useState<'clear' | 'delete' | null>(
+    null,
+  );
   const isActive = params.chatId === id;
   const displayUnread = Math.round(unreadCount);
   const [setChatImportant, { loading: isImportantUpdating }] =
@@ -101,10 +116,6 @@ export function ChatItem({
   }
 
   async function handleClearHistory() {
-    if (!window.confirm(t('confirmClearHistory'))) {
-      return;
-    }
-
     try {
       await clearChatHistory({
         variables: {
@@ -118,10 +129,6 @@ export function ChatItem({
   }
 
   async function handleDeleteChat() {
-    if (!window.confirm(t('confirmDeleteChat'))) {
-      return;
-    }
-
     try {
       await deleteChat({
         variables: {
@@ -139,88 +146,139 @@ export function ChatItem({
     }
   }
 
-  return (
-    <Card
-      className={cn(
-        'hover:bg-accent relative cursor-pointer transition-colors',
-        isActive && 'bg-accent border-primary',
-      )}
-    >
-      <CardContent className='flex items-center gap-4 p-4 pr-12'>
-        <Link
-          href={`/chats/${id}`}
-          className='contents'
-        >
-          <Avatar className='size-12'>
-            <AvatarImage
-              src={
-                otherUser.avatar ? S3_URL + otherUser.avatar : undefined
-              }
-              alt={displayName}
-            />
-            <AvatarFallback>
-              {displayName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className='min-w-0 flex-1'>
-            <div className='truncate font-semibold'>{displayName}</div>
-            {lastMessage && (
-              <div className='text-muted-foreground truncate text-sm'>
-                {messagePreview}
-              </div>
-            )}
-          </div>
-          {displayUnread > 0 && (
-            <Badge className='ml-2 px-2 py-0.5 text-xs'>
-              {displayUnread > 99 ? '99+' : displayUnread}
-            </Badge>
-          )}
-        </Link>
+  async function handleConfirmAction() {
+    if (pendingAction === 'clear') {
+      await handleClearHistory();
+      setPendingAction(null);
+      return;
+    }
 
-        <div className='absolute top-2 right-2'>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon-sm'
-                aria-label={t('actionsLabel')}
-                disabled={isActionPending}
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
+    if (pendingAction === 'delete') {
+      await handleDeleteChat();
+      setPendingAction(null);
+    }
+  }
+
+  return (
+    <AlertDialog
+      open={pendingAction !== null}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setPendingAction(null);
+        }
+      }}
+    >
+      <Card
+        className={cn(
+          'hover:bg-accent relative cursor-pointer transition-colors',
+          isActive && 'bg-accent border-primary',
+        )}
+      >
+        <CardContent className='flex items-center gap-4 p-4 pr-12'>
+          <Link
+            href={`/chats/${id}`}
+            className='contents'
+          >
+            <Avatar className='size-12'>
+              <AvatarImage
+                src={
+                  otherUser.avatar ? S3_URL + otherUser.avatar : undefined
+                }
+                alt={displayName}
+              />
+              <AvatarFallback>
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className='min-w-0 flex-1'>
+              <div className='truncate font-semibold'>{displayName}</div>
+              {lastMessage && (
+                <div className='text-muted-foreground truncate text-sm'>
+                  {messagePreview}
+                </div>
+              )}
+            </div>
+            {displayUnread > 0 && (
+              <Badge className='ml-2 px-2 py-0.5 text-xs'>
+                {displayUnread > 99 ? '99+' : displayUnread}
+              </Badge>
+            )}
+          </Link>
+
+          <div className='absolute top-2 right-2'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon-sm'
+                  aria-label={t('actionsLabel')}
+                  disabled={isActionPending}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                >
+                  <MoreVertical className='size-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align='end'
+                className='w-64'
               >
-                <MoreVertical className='size-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align='end'
-              className='w-64'
-            >
-              <DropdownMenuItem
-                disabled={isActionPending}
-                onClick={() => void handleSetImportant(!isImportant)}
-              >
-                {isImportant ? t('removeFromImportant') : t('addToImportant')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={isActionPending}
-                onClick={() => void handleClearHistory()}
-              >
-                {t('clearHistory')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className='text-destructive focus:text-destructive'
-                disabled={isActionPending}
-                onClick={() => void handleDeleteChat()}
-              >
-                {t('deleteChat')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardContent>
-    </Card>
+                <DropdownMenuItem
+                  disabled={isActionPending}
+                  onClick={() => void handleSetImportant(!isImportant)}
+                >
+                  {isImportant ? t('removeFromImportant') : t('addToImportant')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={isActionPending}
+                  onClick={() => setPendingAction('clear')}
+                >
+                  {t('clearHistory')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className='text-destructive focus:text-destructive'
+                  disabled={isActionPending}
+                  onClick={() => setPendingAction('delete')}
+                >
+                  {t('deleteChat')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {pendingAction === 'clear' ? t('clearHistory') : t('deleteChat')}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {pendingAction === 'clear'
+              ? t('confirmClearHistory')
+              : t('confirmDeleteChat')}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isActionPending}>
+            {t('cancelButton')}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => void handleConfirmAction()}
+            disabled={isActionPending}
+            className={
+              pendingAction === 'delete'
+                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                : undefined
+            }
+          >
+            {pendingAction === 'clear' ? t('clearHistory') : t('deleteChat')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -275,6 +275,7 @@
     "actionsLabel": "Действия с чатом",
     "addToImportant": "Добавить в важные",
     "removeFromImportant": "Убрать из важных",
+    "cancelButton": "Отмена",
     "clearHistory": "Очистить историю (для всех)",
     "deleteChat": "Удалить чат (для всех)",
     "confirmClearHistory": "Очистить всю историю переписки для обоих участников?",

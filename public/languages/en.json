@@ -272,6 +272,7 @@
     "actionsLabel": "Chat actions",
     "addToImportant": "Add to important",
     "removeFromImportant": "Remove from important",
+    "cancelButton": "Cancel",
     "clearHistory": "Clear history (for both)",
     "deleteChat": "Delete chat (for both)",
     "confirmClearHistory": "Clear the whole chat history for both participants?",

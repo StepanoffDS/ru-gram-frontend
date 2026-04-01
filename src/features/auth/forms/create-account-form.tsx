@@ -1,14 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HelpCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useCreateUserMutation } from '@/graphql/generated/output';
+import {
+  useCreateUserMutation,
+  useLoginUserMutation,
+} from '@/graphql/generated/output';
 import { Button } from '@/shared/components/ui/button';
 import { Form, FormField } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
@@ -24,13 +25,15 @@ import {
   createAccountSchema,
   type CreateAccountSchema,
 } from '../schemas/create-account.schema';
+import { useAuth } from '../hooks/useAuth';
+import { Role } from '../types';
 import { AuthWrapper } from '../ui/auth-wrapper';
 import { FieldWrapper } from '../ui/field-wrapper';
 import { FormWrapper } from '../ui/form-wrapper';
 
 export function CreateAccountForm() {
   const t = useTranslations('auth.register');
-  const router = useRouter();
+  const { auth, setRole, setUserId } = useAuth();
   const usernameRules = t.raw('usernameTooltip.rules') as string[];
   const form = useForm<CreateAccountSchema>({
     resolver: zodResolver(createAccountSchema),
@@ -42,18 +45,41 @@ export function CreateAccountForm() {
   });
   const { isValid } = form.formState;
 
-  const [createUser, { loading: isLoadingCreate }] = useCreateUserMutation({
-    onCompleted: () => {
-      toast.success(t('successMessage'));
-      router.push('/login');
-    },
-    onError: () => {
-      toast.error(t('errorMessage'));
-    },
-  });
+  const [createUser, { loading: isLoadingCreate }] = useCreateUserMutation();
+  const [loginUser, { loading: isLoadingLogin }] = useLoginUserMutation();
+  const isLoading = isLoadingCreate || isLoadingLogin;
 
-  const onSubmit = (data: CreateAccountSchema) => {
-    createUser({ variables: { data } });
+  const onSubmit = async (data: CreateAccountSchema) => {
+    try {
+      const createResponse = await createUser({ variables: { data } });
+
+      if (!createResponse.data?.createUser) {
+        throw new Error('Failed to create user');
+      }
+
+      const loginResponse = await loginUser({
+        variables: {
+          data: {
+            login: data.email,
+            password: data.password,
+          },
+        },
+      });
+
+      const user = loginResponse.data?.loginUser;
+
+      if (!user) {
+        throw new Error('Failed to login after registration');
+      }
+
+      auth();
+      setRole(user.role as Role);
+      setUserId(user.id);
+      toast.success(t('successMessage'));
+      globalThis.location.href = '/';
+    } catch {
+      toast.error(t('errorMessage'));
+    }
   };
 
   return (
@@ -82,7 +108,7 @@ export function CreateAccountForm() {
                     name='email'
                     value={field.value || ''}
                     placeholder='example@gmail.com'
-                    disabled={isLoadingCreate}
+                    disabled={isLoading}
                     autoComplete='email'
                   />
                 )}
@@ -126,7 +152,7 @@ export function CreateAccountForm() {
                     name='username'
                     value={field.value || ''}
                     placeholder='john_doe'
-                    disabled={isLoadingCreate}
+                    disabled={isLoading}
                     autoComplete='username'
                   />
                 )}
@@ -147,7 +173,7 @@ export function CreateAccountForm() {
                     name='password'
                     value={field.value || ''}
                     placeholder='********'
-                    disabled={isLoadingCreate}
+                    disabled={isLoading}
                     autoComplete='new-password'
                   />
                 )}
@@ -156,7 +182,7 @@ export function CreateAccountForm() {
 
             <Button
               type='submit'
-              disabled={!isValid || isLoadingCreate}
+              disabled={!isValid || isLoading}
             >
               {t('submitButton')}
             </Button>
