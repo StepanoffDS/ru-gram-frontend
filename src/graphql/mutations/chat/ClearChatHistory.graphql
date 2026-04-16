@@ -1,0 +1,3 @@
+mutation ClearChatHistory($chatId: String!) {
+  clearChatHistory(chatId: $chatId)
+}

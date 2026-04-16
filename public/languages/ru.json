@@ -295,7 +295,24 @@
       "unread": "Не прочитано",
       "sending": "Отправка...",
       "emptyMessage": "Сообщение не может быть пустым",
-      "errorSending": "Не удалось отправить сообщение"
+      "errorSending": "Не удалось отправить сообщение",
+      "editMessage": "Редактировать",
+      "deleteMessage": "Удалить",
+      "deleting": "Удаление...",
+      "saveEdit": "Сохранить",
+      "cancelEdit": "Отмена",
+      "saving": "Сохранение...",
+      "edited": "Изменено",
+      "errorDeletingMessage": "Не удалось удалить сообщение",
+      "errorUpdatingMessage": "Не удалось обновить сообщение",
+      "reply": "Ответить",
+      "replyTo": "Ответ на",
+      "cancelReply": "Отменить ответ",
+      "replyPlaceholder": "Ваш ответ...",
+      "emojiButtonLabel": "Открыть эмодзи",
+      "emojiSearchPlaceholder": "Поиск эмодзи...",
+      "originalMessageNotFound": "Исходное сообщение не найдено",
+      "you": "Вы"
     }
   }
 }

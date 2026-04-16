@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-
-import { MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+
+import { MoreVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -181,9 +181,7 @@ export function ChatItem({
           >
             <Avatar className='size-12'>
               <AvatarImage
-                src={
-                  otherUser.avatar ? S3_URL + otherUser.avatar : undefined
-                }
+                src={otherUser.avatar ? S3_URL + otherUser.avatar : undefined}
                 alt={displayName}
               />
               <AvatarFallback>

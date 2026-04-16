@@ -15,7 +15,9 @@ export default async function RootLayout({
       <MainSidebar />
       <main className='relative flex flex-1 flex-col'>
         <SidebarTrigger />
-        <div className='my-container flex flex-1 flex-col'>{children}</div>
+        <div className='my-container flex min-h-0 flex-1 flex-col'>
+          {children}
+        </div>
       </main>
       <MobileBottomNavigation />
     </SidebarProvider>

@@ -2,7 +2,8 @@
 
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 import { MessageItem } from '@/entities/message/ui/message-item';
 import { Card, CardContent, CardDescription } from '@/shared/components/ui/card';
@@ -12,7 +13,17 @@ interface Message {
   content: string;
   images: string[];
   createdAt: Date;
+  updatedAt: Date;
   isReadByOtherUser: boolean;
+  replyTo?: {
+    id: string;
+    content: string;
+    user: {
+      id: string;
+      username: string;
+      name: string | null;
+    };
+  } | null;
   user: {
     id: string;
     username: string;
@@ -26,6 +37,19 @@ interface MessageListProps {
   loading: boolean;
   error: Error | null;
   currentUserId?: string;
+  onDeleteMessage?: (id: string) => void;
+  onUpdateMessage?: (id: string, content: string) => void;
+  onReplyMessage?: (message: {
+    id: string;
+    content: string;
+    user: {
+      id: string;
+      username: string;
+      name: string | null;
+    };
+  }) => void;
+  deletingMessageId?: string | null;
+  updatingMessageId?: string | null;
 }
 
 export function MessageList({
@@ -33,14 +57,43 @@ export function MessageList({
   loading,
   error,
   currentUserId,
+  onDeleteMessage,
+  onUpdateMessage,
+  onReplyMessage,
+  deletingMessageId,
+  updatingMessageId,
 }: MessageListProps) {
   const t = useTranslations('chats.chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [highlightedMessageId, setHighlightedMessageId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     // Прокрутка вниз при загрузке сообщений
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const handleJumpToMessage = useCallback(
+    (messageId: string) => {
+      const target = messageRefs.current[messageId];
+
+      if (!target) {
+        toast.error(t('originalMessageNotFound'));
+        return;
+      }
+
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedMessageId(messageId);
+      setTimeout(() => {
+        setHighlightedMessageId((current) =>
+          current === messageId ? null : current,
+        );
+      }, 1600);
+    },
+    [t],
+  );
 
   if (loading && messages.length === 0) {
     return (
@@ -81,6 +134,16 @@ export function MessageList({
           key={message.id}
           {...message}
           currentUserId={currentUserId}
+          onDelete={onDeleteMessage}
+          onUpdate={onUpdateMessage}
+          onReply={onReplyMessage}
+          onJumpToMessage={handleJumpToMessage}
+          messageRef={(element) => {
+            messageRefs.current[message.id] = element;
+          }}
+          isHighlighted={highlightedMessageId === message.id}
+          isDeleting={deletingMessageId === message.id}
+          isUpdating={updatingMessageId === message.id}
         />
       ))}
       <div ref={messagesEndRef} />

@@ -65,6 +65,7 @@ export type CreateChatInput = {
 export type CreateMessageInput = {
   content: Scalars['String']['input'];
   images?: InputMaybe<Array<Scalars['String']['input']>>;
+  replyToMessageId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreatePostInput = {
@@ -126,6 +127,8 @@ export type MessageModel = {
   images: Array<Scalars['String']['output']>;
   /** Прочитано ли сообщение хотя бы одним другим участником чата */
   isReadByOtherUser: Scalars['Boolean']['output'];
+  replyTo?: Maybe<MessageModel>;
+  replyToMessageId?: Maybe<Scalars['ID']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   user: UserModel;
   userId: Scalars['ID']['output'];
@@ -159,6 +162,7 @@ export type Mutation = {
   toggleHidePost: PostModel;
   toggleLikePost: LikeResponseModel;
   unfollowUser: Scalars['Boolean']['output'];
+  updateMessage: MessageModel;
   updatePost: PostModel;
 };
 
@@ -257,6 +261,12 @@ export type MutationToggleLikePostArgs = {
 
 export type MutationUnfollowUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateMessageArgs = {
+  data: UpdateMessageInput;
+  messageId: Scalars['String']['input'];
 };
 
 
@@ -426,6 +436,7 @@ export type Subscription = {
   messageCreated: MessageModel;
   messageCreatedForUser: MessageModel;
   messageDeleted: Scalars['String']['output'];
+  messageUpdated: MessageModel;
 };
 
 
@@ -436,6 +447,15 @@ export type SubscriptionChatReadUpdatedArgs = {
 
 export type SubscriptionMessageCreatedArgs = {
   chatId: Scalars['String']['input'];
+};
+
+
+export type SubscriptionMessageUpdatedArgs = {
+  chatId: Scalars['String']['input'];
+};
+
+export type UpdateMessageInput = {
+  content: Scalars['String']['input'];
 };
 
 export type UpdatePostInput = {

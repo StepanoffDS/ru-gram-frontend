@@ -292,7 +292,24 @@
       "unread": "Unread",
       "sending": "Sending...",
       "emptyMessage": "Message cannot be empty",
-      "errorSending": "Failed to send message"
+      "errorSending": "Failed to send message",
+      "editMessage": "Edit",
+      "deleteMessage": "Delete",
+      "deleting": "Deleting...",
+      "saveEdit": "Save",
+      "cancelEdit": "Cancel",
+      "saving": "Saving...",
+      "edited": "Edited",
+      "errorDeletingMessage": "Failed to delete message",
+      "errorUpdatingMessage": "Failed to update message",
+      "reply": "Reply",
+      "replyTo": "Reply to",
+      "cancelReply": "Cancel reply",
+      "replyPlaceholder": "Your reply...",
+      "emojiButtonLabel": "Open emoji picker",
+      "emojiSearchPlaceholder": "Search emoji...",
+      "originalMessageNotFound": "Original message not found",
+      "you": "You"
     }
   }
 }

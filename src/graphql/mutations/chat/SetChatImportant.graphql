@@ -1,0 +1,3 @@
+mutation SetChatImportant($chatId: String!, $isImportant: Boolean!) {
+  setChatImportant(chatId: $chatId, isImportant: $isImportant)
+}
