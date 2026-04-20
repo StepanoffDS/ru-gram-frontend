@@ -74,7 +74,50 @@
     "languageTitle": "Language",
     "languageDescription": "Choose the application interface language.",
     "themeTitle": "Theme",
-    "themeDescription": "Choose light, dark, or system theme."
+    "themeDescription": "Choose light, dark, or system theme.",
+    "moderationTitle": "Moderation",
+    "moderationDescription": "Manage users, bans, and admin roles.",
+    "moderationOpen": "Open section"
+  },
+  "moderationPage": {
+    "title": "Moderation panel",
+    "loading": "Checking access...",
+    "loadingUsers": "Loading users...",
+    "loadingMore": "Loading more...",
+    "forbiddenTitle": "Insufficient permissions",
+    "forbiddenDescription": "Only admins and super admins can access moderation.",
+    "backToSettings": "Back to settings",
+    "blockedSuccess": "User has been blocked",
+    "unblockedSuccess": "User has been unblocked",
+    "roleRemovedSuccess": "Admin role has been removed",
+    "commonErrorMessage": "Failed to perform action",
+    "unknownBlocker": "unknown",
+    "lastBlockedBy": "Last blocked by: {blocker}",
+    "adminBlockedHint": "Unblock the admin first, then remove the role.",
+    "tabs": {
+      "activeUsers": "Users",
+      "blockedUsers": "Blocked",
+      "admins": "Admins"
+    },
+    "actions": {
+      "block": "Block",
+      "unblock": "Unblock",
+      "removeAdmin": "Remove admin role",
+      "loading": "Working..."
+    },
+    "empty": {
+      "activeUsers": "No active users found",
+      "blockedUsers": "No blocked users",
+      "admins": "No admins found"
+    }
+  },
+  "blockedOverlay": {
+    "title": "Your account is blocked",
+    "description": "All actions and windows are temporarily unavailable. You can contact a super admin to appeal this decision.",
+    "blockedBy": "Last blocked by: {blocker}",
+    "unknownBlocker": "unknown",
+    "contactsTitle": "Super admin contacts",
+    "contactsEmpty": "Super admin contacts are currently unavailable."
   },
   "themeToggleSwitch": {
     "ariaLabel": "Toggle theme",

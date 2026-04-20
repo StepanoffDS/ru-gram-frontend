@@ -74,7 +74,50 @@
     "languageTitle": "Язык",
     "languageDescription": "Выберите язык интерфейса приложения.",
     "themeTitle": "Тема",
-    "themeDescription": "Выберите светлую, темную или системную тему."
+    "themeDescription": "Выберите светлую, темную или системную тему.",
+    "moderationTitle": "Модерация",
+    "moderationDescription": "Управление пользователями, блокировками и ролями администраторов.",
+    "moderationOpen": "Открыть раздел"
+  },
+  "moderationPage": {
+    "title": "Панель модерации",
+    "loading": "Проверка доступа...",
+    "loadingUsers": "Загрузка пользователей...",
+    "loadingMore": "Загрузка ещё...",
+    "forbiddenTitle": "Недостаточно прав",
+    "forbiddenDescription": "Доступ к панели модерации есть только у админов и суперадминов.",
+    "backToSettings": "Назад в настройки",
+    "blockedSuccess": "Пользователь заблокирован",
+    "unblockedSuccess": "Пользователь разблокирован",
+    "roleRemovedSuccess": "Роль администратора снята",
+    "commonErrorMessage": "Не удалось выполнить действие",
+    "unknownBlocker": "неизвестно",
+    "lastBlockedBy": "Последний блок: {blocker}",
+    "adminBlockedHint": "Сначала разблокируйте администратора, затем снимите роль.",
+    "tabs": {
+      "activeUsers": "Пользователи",
+      "blockedUsers": "Заблокированные",
+      "admins": "Админы"
+    },
+    "actions": {
+      "block": "Заблокировать",
+      "unblock": "Разблокировать",
+      "removeAdmin": "Снять роль админа",
+      "loading": "Выполняется..."
+    },
+    "empty": {
+      "activeUsers": "Активных пользователей не найдено",
+      "blockedUsers": "Заблокированных пользователей нет",
+      "admins": "Администраторы не найдены"
+    }
+  },
+  "blockedOverlay": {
+    "title": "Ваш аккаунт заблокирован",
+    "description": "Все действия и окна временно недоступны. Вы можете написать супер-администратору и обжаловать решение.",
+    "blockedBy": "Последняя блокировка выполнена: {blocker}",
+    "unknownBlocker": "неизвестно",
+    "contactsTitle": "Контакты суперадминистраторов",
+    "contactsEmpty": "Контакты суперадминистраторов пока недоступны."
   },
   "themeToggleSwitch": {
     "ariaLabel": "Переключить тему",

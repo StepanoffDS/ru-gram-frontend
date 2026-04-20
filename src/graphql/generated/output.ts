@@ -18,6 +18,15 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type AdminContactModel = {
+  __typename?: 'AdminContactModel';
+  avatar?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
+};
+
 export type ChangeEmailInput = {
   newEmail: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -88,6 +97,8 @@ export type FilterPostsInput = {
 };
 
 export type FilterUsersInput = {
+  isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
+  role?: InputMaybe<Scalars['String']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -161,6 +172,7 @@ export type Mutation = {
   setChatImportant: Scalars['Boolean']['output'];
   toggleHidePost: PostModel;
   toggleLikePost: LikeResponseModel;
+  toggleUserBlock: UserModel;
   unfollowUser: Scalars['Boolean']['output'];
   updateMessage: MessageModel;
   updatePost: PostModel;
@@ -259,6 +271,11 @@ export type MutationToggleLikePostArgs = {
 };
 
 
+export type MutationToggleUserBlockArgs = {
+  data: ToggleUserBlockInput;
+};
+
+
 export type MutationUnfollowUserArgs = {
   userId: Scalars['String']['input'];
 };
@@ -335,6 +352,7 @@ export type Query = {
   findMessagesByChatId: Array<MessageModel>;
   findOneById: PostModel;
   findOneByUsername: UserModel;
+  findSuperAdmins: Array<AdminContactModel>;
   getFollowers: PaginatedUsersModel;
   getFollowersCount: Scalars['Int']['output'];
   getFollowing: PaginatedUsersModel;
@@ -454,6 +472,11 @@ export type SubscriptionMessageUpdatedArgs = {
   chatId: Scalars['String']['input'];
 };
 
+export type ToggleUserBlockInput = {
+  id: Scalars['String']['input'];
+  isBlocked: Scalars['Boolean']['input'];
+};
+
 export type UpdateMessageInput = {
   content: Scalars['String']['input'];
 };
@@ -467,11 +490,14 @@ export type UserModel = {
   __typename?: 'UserModel';
   avatar?: Maybe<Scalars['String']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
+  blockedAt?: Maybe<Scalars['DateTime']['output']>;
+  blockedBy?: Maybe<AdminContactModel>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   followersCount?: Maybe<Scalars['Int']['output']>;
   followingCount?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
+  isBlocked: Scalars['Boolean']['output'];
   isFollowing?: Maybe<Scalars['Boolean']['output']>;
   isMe: Scalars['Boolean']['output'];
   name?: Maybe<Scalars['String']['output']>;
