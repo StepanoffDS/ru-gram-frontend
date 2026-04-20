@@ -11,7 +11,7 @@ import {
 } from '@apollo/client';
 import emojiMartData from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { Send, Smile } from 'lucide-react';
+import { ImagePlus, Send, Smile, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -31,6 +31,7 @@ import {
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { uploadMessageImage } from '@/shared/libs/chat-images-api';
 
 type MessageUser = {
   id: string;
@@ -295,7 +296,13 @@ export default function ChatPage() {
   const [updatingMessageId, setUpdatingMessageId] = useState<string | null>(
     null,
   );
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImagePreview, setSelectedImagePreview] = useState<
+    string | null
+  >(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
   const selectionRef = useRef({ start: 0, end: 0 });
 
   const client = useApolloClient();
@@ -330,7 +337,10 @@ export default function ChatPage() {
         return;
       }
 
-      client.cache.updateQuery<FindMessagesByChatIdData, FindMessagesByChatIdVariables>(
+      client.cache.updateQuery<
+        FindMessagesByChatIdData,
+        FindMessagesByChatIdVariables
+      >(
         {
           query: FIND_MESSAGES_BY_CHAT_ID_QUERY,
           variables: messageQueryVariables,
@@ -367,6 +377,20 @@ export default function ChatPage() {
     void markChatAsReadAndSyncList(chatId);
   }, [chatId, markChatAsReadAndSyncList]);
 
+  useEffect(() => {
+    if (!selectedImage) {
+      setSelectedImagePreview(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(selectedImage);
+    setSelectedImagePreview(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [selectedImage]);
+
   const { data, loading, error } = useQuery<
     FindMessagesByChatIdData,
     FindMessagesByChatIdVariables
@@ -391,7 +415,9 @@ export default function ChatPage() {
       }
 
       patchMessagesCache((messages) => {
-        const messageExists = messages.some((item) => item.id === newMessage.id);
+        const messageExists = messages.some(
+          (item) => item.id === newMessage.id,
+        );
         if (messageExists) {
           return messages;
         }
@@ -433,46 +459,52 @@ export default function ChatPage() {
     },
   });
 
-  useSubscription<MessageDeletedSubscriptionData>(MESSAGE_DELETED_SUBSCRIPTION, {
-    skip: !chatId,
-    onData: ({ data: subscriptionData }) => {
-      const deletedMessageId = subscriptionData.data?.messageDeleted;
-      if (!deletedMessageId) {
-        return;
-      }
+  useSubscription<MessageDeletedSubscriptionData>(
+    MESSAGE_DELETED_SUBSCRIPTION,
+    {
+      skip: !chatId,
+      onData: ({ data: subscriptionData }) => {
+        const deletedMessageId = subscriptionData.data?.messageDeleted;
+        if (!deletedMessageId) {
+          return;
+        }
 
-      patchMessagesCache((messages) =>
-        messages.filter((item) => item.id !== deletedMessageId),
-      );
+        patchMessagesCache((messages) =>
+          messages.filter((item) => item.id !== deletedMessageId),
+        );
 
-      setReplyToMessage((current) =>
-        current?.id === deletedMessageId ? null : current,
-      );
+        setReplyToMessage((current) =>
+          current?.id === deletedMessageId ? null : current,
+        );
+      },
     },
-  });
+  );
 
-  useSubscription<MessageUpdatedSubscriptionData>(MESSAGE_UPDATED_SUBSCRIPTION, {
-    variables: { chatId },
-    skip: !chatId,
-    onData: ({ data: subscriptionData }) => {
-      const updatedMessage = subscriptionData.data?.messageUpdated;
-      if (!updatedMessage) {
-        return;
-      }
+  useSubscription<MessageUpdatedSubscriptionData>(
+    MESSAGE_UPDATED_SUBSCRIPTION,
+    {
+      variables: { chatId },
+      skip: !chatId,
+      onData: ({ data: subscriptionData }) => {
+        const updatedMessage = subscriptionData.data?.messageUpdated;
+        if (!updatedMessage) {
+          return;
+        }
 
-      patchMessagesCache((messages) =>
-        messages.map((item) =>
-          item.id === updatedMessage.id
-            ? {
-                ...item,
-                content: updatedMessage.content,
-                updatedAt: updatedMessage.updatedAt,
-              }
-            : item,
-        ),
-      );
+        patchMessagesCache((messages) =>
+          messages.map((item) =>
+            item.id === updatedMessage.id
+              ? {
+                  ...item,
+                  content: updatedMessage.content,
+                  updatedAt: updatedMessage.updatedAt,
+                }
+              : item,
+          ),
+        );
+      },
     },
-  });
+  );
 
   const messages = useMemo(() => {
     if (!data?.findMessagesByChatId) return [];
@@ -570,24 +602,51 @@ export default function ChatPage() {
   }, [messages, userId]);
 
   const sendMessage = async () => {
-    if (!message.trim() || !chatId) {
+    if (!chatId) {
       return;
     }
 
     const messageContent = message.trim();
+    const imageForSending = selectedImage;
+
+    if (!messageContent && !imageForSending) {
+      return;
+    }
+
     setMessage('');
+    setSelectedImage(null);
+
+    let uploadedImageUrl: string | null = null;
 
     try {
-      await createMessageMutation({
+      if (imageForSending) {
+        setUploadingImage(true);
+        const uploadedImage = await uploadMessageImage(chatId, imageForSending);
+        uploadedImageUrl = uploadedImage.imageUrl;
+      }
+
+      const result = await createMessageMutation({
         variables: {
           chatId,
           data: {
             content: messageContent,
-            images: [],
+            images: uploadedImageUrl ? [uploadedImageUrl] : [],
             replyToMessageId: replyToMessage?.id ?? null,
           },
         },
       });
+
+      const createdMessage = result.data?.createMessage;
+      if (createdMessage) {
+        patchMessagesCache((messages) => {
+          const exists = messages.some((item) => item.id === createdMessage.id);
+          if (exists) {
+            return messages;
+          }
+
+          return [...messages, createdMessage];
+        });
+      }
 
       setReplyToMessage(null);
     } catch (error) {
@@ -599,6 +658,11 @@ export default function ChatPage() {
         toast.error(t('errorSending'));
       }
       setMessage(messageContent);
+      if (imageForSending) {
+        setSelectedImage(imageForSending);
+      }
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -622,7 +686,6 @@ export default function ChatPage() {
   }, []);
 
   const handleEmojiInsert = (emoji: string) => {
-
     setMessage((currentMessage) => {
       const safeStart = Math.max(
         0,
@@ -658,12 +721,31 @@ export default function ChatPage() {
     });
   };
 
+  const handleSelectImage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file) {
+        return;
+      }
+
+      setSelectedImage(file);
+    },
+    [],
+  );
+
+  const clearSelectedImage = useCallback(() => {
+    setSelectedImage(null);
+  }, []);
+
   const displayName = chatUser?.name || chatUser?.username || t('title');
   const replyPreviewName =
     replyToMessage?.user.id === userId
       ? t('you')
       : (replyToMessage?.user.name ?? replyToMessage?.user.username);
   const emojiPickerTheme = resolvedTheme === 'dark' ? 'dark' : 'light';
+  const canSend = Boolean(message.trim() || selectedImage);
+  const isSubmitDisabled = !canSend || sendingMessage || uploadingImage;
 
   return (
     <div className='flex h-full min-h-0 flex-col overflow-hidden px-1 py-1 pt-0'>
@@ -702,7 +784,33 @@ export default function ChatPage() {
             </Button>
           </div>
         )}
+        {selectedImagePreview && (
+          <div className='bg-muted relative mb-2 h-24 w-24 overflow-hidden rounded-md border'>
+            <img
+              src={selectedImagePreview}
+              alt={t('selectedImageAlt')}
+              className='h-full w-full object-cover'
+            />
+            <Button
+              type='button'
+              variant='secondary'
+              size='icon'
+              onClick={clearSelectedImage}
+              className='absolute top-1 right-1 h-6 w-6'
+              aria-label={t('removeImageButtonLabel')}
+            >
+              <X className='size-4' />
+            </Button>
+          </div>
+        )}
         <div className='flex items-end gap-2'>
+          <input
+            ref={imageInputRef}
+            type='file'
+            accept='image/*'
+            className='hidden'
+            onChange={handleSelectImage}
+          />
           <Popover
             open={isEmojiPickerOpen}
             onOpenChange={(isOpen) => {
@@ -723,7 +831,10 @@ export default function ChatPage() {
                 <Smile className='size-5' />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align='start' className='w-fit p-0'>
+            <PopoverContent
+              align='start'
+              className='w-fit p-0'
+            >
               <Picker
                 data={emojiMartData}
                 onEmojiSelect={(emoji: unknown) => {
@@ -743,6 +854,17 @@ export default function ChatPage() {
               />
             </PopoverContent>
           </Popover>
+          <Button
+            type='button'
+            variant='outline'
+            size='icon'
+            className='h-[60px] w-[60px] shrink-0'
+            aria-label={t('attachImageButtonLabel')}
+            onClick={() => imageInputRef.current?.click()}
+            disabled={sendingMessage || uploadingImage}
+          >
+            <ImagePlus className='size-5' />
+          </Button>
           <Textarea
             ref={textareaRef}
             value={message}
@@ -760,7 +882,7 @@ export default function ChatPage() {
           />
           <Button
             onClick={() => void sendMessage()}
-            disabled={!message.trim() || sendingMessage}
+            disabled={isSubmitDisabled}
             size='icon'
             className='h-[60px] w-[60px] shrink-0'
           >

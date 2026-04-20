@@ -307,6 +307,9 @@
       "cancelReply": "Cancel reply",
       "replyPlaceholder": "Your reply...",
       "emojiButtonLabel": "Open emoji picker",
+      "attachImageButtonLabel": "Attach image",
+      "removeImageButtonLabel": "Remove image",
+      "selectedImageAlt": "Selected image",
       "emojiSearchPlaceholder": "Search emoji...",
       "originalMessageNotFound": "Original message not found",
       "you": "You"

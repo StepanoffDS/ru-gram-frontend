@@ -310,6 +310,9 @@
       "cancelReply": "Отменить ответ",
       "replyPlaceholder": "Ваш ответ...",
       "emojiButtonLabel": "Открыть эмодзи",
+      "attachImageButtonLabel": "Прикрепить изображение",
+      "removeImageButtonLabel": "Убрать изображение",
+      "selectedImageAlt": "Выбранное изображение",
       "emojiSearchPlaceholder": "Поиск эмодзи...",
       "originalMessageNotFound": "Исходное сообщение не найдено",
       "you": "Вы"

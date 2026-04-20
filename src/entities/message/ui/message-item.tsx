@@ -3,8 +3,9 @@
 import Link from 'next/link';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
+import { ImageWindow } from '@/features/image-window';
 import {
   Avatar,
   AvatarFallback,
@@ -87,6 +88,13 @@ export function MessageItem({
   const displayName = user.name || user.username;
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
+  const [previewImage, setPreviewImage] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
+  const [imageRetryToken, setImageRetryToken] = useState<
+    Record<string, number>
+  >({});
   const formattedTime = new Date(createdAt).toLocaleTimeString('ru-RU', {
     hour: '2-digit',
     minute: '2-digit',
@@ -97,6 +105,37 @@ export function MessageItem({
     replyTo?.user.id === currentUserId
       ? t('you')
       : (replyTo?.user.name ?? replyTo?.user.username);
+  const getMessageImageSrc = useCallback(
+    (image: string, index: number) => {
+      const baseSrc = image.startsWith('http') ? image : `${S3_URL}${image}`;
+      const retry = imageRetryToken[`${id}-${index}`] ?? 0;
+      if (retry === 0) {
+        return baseSrc;
+      }
+      const separator = baseSrc.includes('?') ? '&' : '?';
+      return `${baseSrc}${separator}retry=${retry}`;
+    },
+    [id, imageRetryToken],
+  );
+  const handleMessageImageError = useCallback(
+    (index: number) => {
+      const key = `${id}-${index}`;
+      const currentRetry = imageRetryToken[key] ?? 0;
+
+      if (currentRetry >= 3) {
+        return;
+      }
+
+      const nextRetry = currentRetry + 1;
+      window.setTimeout(() => {
+        setImageRetryToken((current) => ({
+          ...current,
+          [key]: Date.now(),
+        }));
+      }, nextRetry * 700);
+    },
+    [id, imageRetryToken],
+  );
 
   const messageBody = (
     <Card
@@ -156,7 +195,11 @@ export function MessageItem({
                 <div className='truncate opacity-90'>{replyTo.content}</div>
               </button>
             )}
-            <p className='text-sm break-words whitespace-pre-wrap'>{content}</p>
+            {content && (
+              <p className='text-sm break-words whitespace-pre-wrap'>
+                {content}
+              </p>
+            )}
           </div>
         )}
         {images.length > 0 && (
@@ -164,9 +207,16 @@ export function MessageItem({
             {images.map((image, index) => (
               <img
                 key={index}
-                src={image}
+                src={getMessageImageSrc(image, index)}
                 alt={`Image ${index + 1}`}
-                className='h-auto max-w-full rounded-lg'
+                className='h-auto max-w-full cursor-pointer rounded-lg'
+                onError={() => handleMessageImageError(index)}
+                onClick={() =>
+                  setPreviewImage({
+                    src: getMessageImageSrc(image, index),
+                    alt: `Image ${index + 1}`,
+                  })
+                }
               />
             ))}
           </div>
@@ -176,82 +226,96 @@ export function MessageItem({
   );
 
   return (
-    <div
-      ref={messageRef}
-      className={cn(
-        'mb-4 flex gap-3 rounded-lg p-1 transition-colors',
-        isOwnMessage && 'flex-row-reverse',
-        isHighlighted && 'ring-primary/40 bg-primary/5 ring-2',
-      )}
-    >
-      <Link
-        href={`/profile/${user.username}`}
-        className='shrink-0'
-      >
-        <Avatar className='size-8'>
-          <AvatarImage
-            src={user.avatar ? S3_URL + user.avatar : undefined}
-            alt={displayName}
-          />
-          <AvatarFallback>{displayName.charAt(0).toUpperCase()}</AvatarFallback>
-        </Avatar>
-      </Link>
+    <>
       <div
+        ref={messageRef}
         className={cn(
-          'flex max-w-[70%] flex-col gap-1',
-          isOwnMessage && 'items-end',
+          'mb-4 flex gap-3 rounded-lg p-1 transition-colors',
+          isOwnMessage && 'flex-row-reverse',
+          isHighlighted && 'ring-primary/40 bg-primary/5 ring-2',
         )}
       >
-        {!isEditing ? (
-          <ContextMenu>
-            <ContextMenuTrigger asChild>{messageBody}</ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem
-                onClick={() =>
-                  onReply?.({
-                    id,
-                    content,
-                    user: {
-                      id: user.id,
-                      username: user.username,
-                      name: user.name,
-                    },
-                  })
-                }
-              >
-                {t('reply')}
-              </ContextMenuItem>
-              {isOwnMessage && (
+        <Link
+          href={`/profile/${user.username}`}
+          className='shrink-0'
+        >
+          <Avatar className='size-8'>
+            <AvatarImage
+              src={user.avatar ? S3_URL + user.avatar : undefined}
+              alt={displayName}
+            />
+            <AvatarFallback>{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </Link>
+        <div
+          className={cn(
+            'flex max-w-[70%] flex-col gap-1',
+            isOwnMessage && 'items-end',
+          )}
+        >
+          {!isEditing ? (
+            <ContextMenu>
+              <ContextMenuTrigger asChild>{messageBody}</ContextMenuTrigger>
+              <ContextMenuContent>
                 <ContextMenuItem
-                  onClick={() => {
-                    setEditedContent(content);
-                    setIsEditing(true);
-                  }}
+                  onClick={() =>
+                    onReply?.({
+                      id,
+                      content,
+                      user: {
+                        id: user.id,
+                        username: user.username,
+                        name: user.name,
+                      },
+                    })
+                  }
                 >
-                  {t('editMessage')}
+                  {t('reply')}
                 </ContextMenuItem>
-              )}
-              {isOwnMessage && (
-                <ContextMenuItem
-                  variant='destructive'
-                  onClick={() => onDelete?.(id)}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? t('deleting') : t('deleteMessage')}
-                </ContextMenuItem>
-              )}
-            </ContextMenuContent>
-          </ContextMenu>
-        ) : (
-          messageBody
-        )}
-        <span className='text-muted-foreground px-1 text-xs'>
-          {isEdited && `${t('edited')} · `}
-          {isOwnMessage
-            ? `${formattedTime} · ${isReadByOtherUser ? t('read') : t('unread')}`
-            : formattedTime}
-        </span>
+                {isOwnMessage && (
+                  <ContextMenuItem
+                    onClick={() => {
+                      setEditedContent(content);
+                      setIsEditing(true);
+                    }}
+                  >
+                    {t('editMessage')}
+                  </ContextMenuItem>
+                )}
+                {isOwnMessage && (
+                  <ContextMenuItem
+                    variant='destructive'
+                    onClick={() => onDelete?.(id)}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? t('deleting') : t('deleteMessage')}
+                  </ContextMenuItem>
+                )}
+              </ContextMenuContent>
+            </ContextMenu>
+          ) : (
+            messageBody
+          )}
+          <span className='text-muted-foreground px-1 text-xs'>
+            {isEdited && `${t('edited')} · `}
+            {isOwnMessage
+              ? `${formattedTime} · ${isReadByOtherUser ? t('read') : t('unread')}`
+              : formattedTime}
+          </span>
+        </div>
       </div>
-    </div>
+      {previewImage && (
+        <ImageWindow
+          isOpen={!!previewImage}
+          setIsOpen={(isOpen) => {
+            if (!isOpen) {
+              setPreviewImage(null);
+            }
+          }}
+          src={previewImage.src}
+          alt={previewImage.alt}
+        />
+      )}
+    </>
   );
 }
