@@ -8,6 +8,7 @@ query FindAllByUsername($filter: FilterPostsInput!, $username: String!) {
     updatedAt
     isLiked
     likes
+    commentsCount
     hidden
     isMyPost
     user {

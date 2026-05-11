@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 import { MoreVertical } from 'lucide-react';
@@ -173,35 +172,29 @@ export function ChatItem({
           'hover:bg-accent relative cursor-pointer transition-colors',
           isActive && 'bg-accent border-primary',
         )}
+        onClick={() => router.push(`/chats/${id}`)}
       >
         <CardContent className='flex items-center gap-4 p-4 pr-12'>
-          <Link
-            href={`/chats/${id}`}
-            className='contents'
-          >
-            <Avatar className='size-12'>
-              <AvatarImage
-                src={otherUser.avatar ? S3_URL + otherUser.avatar : undefined}
-                alt={displayName}
-              />
-              <AvatarFallback>
-                {displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className='min-w-0 flex-1'>
-              <div className='truncate font-semibold'>{displayName}</div>
-              {lastMessage && (
-                <div className='text-muted-foreground truncate text-sm'>
-                  {messagePreview}
-                </div>
-              )}
-            </div>
-            {displayUnread > 0 && (
-              <Badge className='ml-2 px-2 py-0.5 text-xs'>
-                {displayUnread > 99 ? '99+' : displayUnread}
-              </Badge>
+          <Avatar className='size-12'>
+            <AvatarImage
+              src={otherUser.avatar ? S3_URL + otherUser.avatar : undefined}
+              alt={displayName}
+            />
+            <AvatarFallback>{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className='min-w-0 flex-1'>
+            <div className='truncate font-semibold'>{displayName}</div>
+            {lastMessage && (
+              <div className='text-muted-foreground truncate text-sm'>
+                {messagePreview}
+              </div>
             )}
-          </Link>
+          </div>
+          {displayUnread > 0 && (
+            <Badge className='ml-2 px-2 py-0.5 text-xs'>
+              {displayUnread > 99 ? '99+' : displayUnread}
+            </Badge>
+          )}
 
           <div className='absolute top-2 right-2'>
             <DropdownMenu>

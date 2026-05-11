@@ -13,6 +13,10 @@
   "profile": {
     "noProfile": "Profile not found"
   },
+  "postPage": {
+    "title": "Post",
+    "notFound": "Post not found"
+  },
   "auth": {
     "register": {
       "heading": "Registration",
@@ -63,10 +67,38 @@
       "profile": "My profile",
       "search": "Search",
       "chats": "Chats",
+      "notifications": "Notifications",
       "settings": "Settings",
       "other": "Other",
       "logout": "Logout",
       "loadingLogout": "Logout..."
+    }
+  },
+  "postComments": {
+    "toggle": "Comments ({count})",
+    "placeholder": "Write a comment...",
+    "send": "Send",
+    "sending": "Sending...",
+    "loading": "Loading comments...",
+    "empty": "No comments yet",
+    "reply": "Reply",
+    "replyTo": "Reply to @{username}",
+    "cancelReply": "Cancel"
+  },
+  "notificationsPage": {
+    "title": "Notifications",
+    "loading": "Loading notifications...",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all as read",
+    "tabs": {
+      "all": "All",
+      "unread": "Unread ({count})"
+    },
+    "items": {
+      "postLike": "{user} liked your post",
+      "postComment": "{user} commented on your post",
+      "postCommentReply": "{user} replied to your comment",
+      "newMessage": "{user} sent you a message"
     }
   },
   "settingsPage": {

@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
 };
 
@@ -77,6 +78,11 @@ export type CreateMessageInput = {
   replyToMessageId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreatePostCommentInput = {
+  content: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatePostInput = {
   images?: InputMaybe<Array<Scalars['String']['input']>>;
   text?: InputMaybe<Scalars['String']['input']>;
@@ -100,6 +106,12 @@ export type FilterUsersInput = {
   isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
   role?: InputMaybe<Scalars['String']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type FindMyNotificationsInput = {
+  onlyUnread?: InputMaybe<Scalars['Boolean']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -160,6 +172,7 @@ export type Mutation = {
   createMessage: MessageModel;
   createOrFindChat: ChatModel;
   createPost: PostModel;
+  createPostComment: PostCommentModel;
   createUser: Scalars['Boolean']['output'];
   deleteChat: Scalars['Boolean']['output'];
   deleteMessage: Scalars['Boolean']['output'];
@@ -168,7 +181,9 @@ export type Mutation = {
   followUser: Scalars['Boolean']['output'];
   loginUser: UserModel;
   logoutUser: Scalars['String']['output'];
+  markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markChatAsRead: Scalars['Boolean']['output'];
+  markNotificationAsRead: Scalars['Boolean']['output'];
   setChatImportant: Scalars['Boolean']['output'];
   toggleHidePost: PostModel;
   toggleLikePost: LikeResponseModel;
@@ -220,6 +235,12 @@ export type MutationCreatePostArgs = {
 };
 
 
+export type MutationCreatePostCommentArgs = {
+  data: CreatePostCommentInput;
+  postId: Scalars['String']['input'];
+};
+
+
 export type MutationCreateUserArgs = {
   data: CreateUserInput;
 };
@@ -252,6 +273,11 @@ export type MutationLoginUserArgs = {
 
 export type MutationMarkChatAsReadArgs = {
   chatId: Scalars['String']['input'];
+};
+
+
+export type MutationMarkNotificationAsReadArgs = {
+  notificationId: Scalars['String']['input'];
 };
 
 
@@ -292,6 +318,39 @@ export type MutationUpdatePostArgs = {
   id: Scalars['String']['input'];
 };
 
+export type NotificationModel = {
+  __typename?: 'NotificationModel';
+  actor?: Maybe<UserModel>;
+  actorId?: Maybe<Scalars['ID']['output']>;
+  chat?: Maybe<ChatModel>;
+  chatId?: Maybe<Scalars['ID']['output']>;
+  comment?: Maybe<PostCommentModel>;
+  commentId?: Maybe<Scalars['ID']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  isRead: Scalars['Boolean']['output'];
+  message?: Maybe<MessageModel>;
+  messageId?: Maybe<Scalars['ID']['output']>;
+  post?: Maybe<PostModel>;
+  postId?: Maybe<Scalars['ID']['output']>;
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  recipientId: Scalars['ID']['output'];
+  type: NotificationType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum NotificationType {
+  NewMessage = 'NEW_MESSAGE',
+  PostComment = 'POST_COMMENT',
+  PostCommentReply = 'POST_COMMENT_REPLY',
+  PostLike = 'POST_LIKE'
+}
+
+export type NotificationsUnreadCountModel = {
+  __typename?: 'NotificationsUnreadCountModel';
+  total: Scalars['Int']['output'];
+};
+
 export type PaginatedLikedUsersModel = {
   __typename?: 'PaginatedLikedUsersModel';
   data: Array<LikedUserModel>;
@@ -310,6 +369,19 @@ export type PaginatedUsersModel = {
   total: Scalars['Int']['output'];
 };
 
+export type PostCommentModel = {
+  __typename?: 'PostCommentModel';
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  parentId?: Maybe<Scalars['String']['output']>;
+  postId: Scalars['String']['output'];
+  replies: Array<PostCommentModel>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: UserModel;
+  userId: Scalars['String']['output'];
+};
+
 export type PostLikesModel = {
   __typename?: 'PostLikesModel';
   createdAt: Scalars['DateTime']['output'];
@@ -323,6 +395,7 @@ export type PostLikesModel = {
 
 export type PostModel = {
   __typename?: 'PostModel';
+  commentsCount?: Maybe<Scalars['Int']['output']>;
   createdAt: Scalars['DateTime']['output'];
   hidden: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -350,8 +423,10 @@ export type Query = {
   findChatById: ChatModel;
   findMe: UserModel;
   findMessagesByChatId: Array<MessageModel>;
+  findMyNotifications: Array<NotificationModel>;
   findOneById: PostModel;
   findOneByUsername: UserModel;
+  findPostComments: Array<PostCommentModel>;
   findSuperAdmins: Array<AdminContactModel>;
   getFollowers: PaginatedUsersModel;
   getFollowersCount: Scalars['Int']['output'];
@@ -359,6 +434,7 @@ export type Query = {
   getFollowingCount: Scalars['Int']['output'];
   getLikedUsersByPost: PaginatedLikedUsersModel;
   isFollowing: Scalars['Boolean']['output'];
+  notificationsUnreadCount: NotificationsUnreadCountModel;
 };
 
 
@@ -404,6 +480,11 @@ export type QueryFindMessagesByChatIdArgs = {
 };
 
 
+export type QueryFindMyNotificationsArgs = {
+  filter?: InputMaybe<FindMyNotificationsInput>;
+};
+
+
 export type QueryFindOneByIdArgs = {
   id: Scalars['String']['input'];
 };
@@ -411,6 +492,11 @@ export type QueryFindOneByIdArgs = {
 
 export type QueryFindOneByUsernameArgs = {
   username: Scalars['String']['input'];
+};
+
+
+export type QueryFindPostCommentsArgs = {
+  postId: Scalars['String']['input'];
 };
 
 
@@ -455,6 +541,8 @@ export type Subscription = {
   messageCreatedForUser: MessageModel;
   messageDeleted: Scalars['String']['output'];
   messageUpdated: MessageModel;
+  notificationCreatedForUser: NotificationModel;
+  notificationUpdatedForUser: NotificationModel;
 };
 
 
@@ -670,7 +758,7 @@ export type FindAllByFollowingQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByFollowingQuery = { __typename?: 'Query', findAllByFollowing: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllByFollowingQuery = { __typename?: 'Query', findAllByFollowing: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type GetFollowersQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -709,14 +797,14 @@ export type FindAllByMeQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByMeQuery = { __typename?: 'Query', findAllByMe: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllByMeQuery = { __typename?: 'Query', findAllByMe: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type FindAllByMeHiddenQueryVariables = Exact<{
   filter: FilterPostsInput;
 }>;
 
 
-export type FindAllByMeHiddenQuery = { __typename?: 'Query', findAllByMeHidden: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllByMeHiddenQuery = { __typename?: 'Query', findAllByMeHidden: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
 
 export type FindAllByUsernameQueryVariables = Exact<{
   filter: FilterPostsInput;
@@ -724,14 +812,21 @@ export type FindAllByUsernameQueryVariables = Exact<{
 }>;
 
 
-export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, hidden: boolean, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } }> };
+export type FindAllByUsernameQuery = { __typename?: 'Query', findAllByUsername: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, hidden: boolean, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } }> };
 
 export type FindAllPostsQueryVariables = Exact<{
   filter: FilterPostsInput;
 }>;
 
 
-export type FindAllPostsQuery = { __typename?: 'Query', findAllPosts: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+export type FindAllPostsQuery = { __typename?: 'Query', findAllPosts: Array<{ __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null } }> };
+
+export type FindOneByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type FindOneByIdQuery = { __typename?: 'Query', findOneById: { __typename?: 'PostModel', id: string, title?: string | null, text?: string | null, images?: Array<string> | null, hidden: boolean, createdAt: any, updatedAt: any, isLiked?: boolean | null, likes: number, commentsCount?: number | null, isMyPost?: boolean | null, user: { __typename?: 'UserModel', id: string, username: string, name?: string | null, avatar?: string | null, role: string } } };
 
 export type FindAllUsersQueryVariables = Exact<{
   filter: FilterUsersInput;
@@ -1568,6 +1663,7 @@ export const FindAllByFollowingDocument = gql`
     }
     isLiked
     likes
+    commentsCount
     isMyPost
   }
 }
@@ -1799,6 +1895,7 @@ export const FindAllByMeDocument = gql`
     updatedAt
     isLiked
     likes
+    commentsCount
     isMyPost
     user {
       id
@@ -1853,6 +1950,7 @@ export const FindAllByMeHiddenDocument = gql`
     updatedAt
     isLiked
     likes
+    commentsCount
     user {
       id
       username
@@ -1906,6 +2004,7 @@ export const FindAllByUsernameDocument = gql`
     updatedAt
     isLiked
     likes
+    commentsCount
     hidden
     isMyPost
     user {
@@ -1970,6 +2069,7 @@ export const FindAllPostsDocument = gql`
     }
     isLiked
     likes
+    commentsCount
     isMyPost
   }
 }
@@ -2007,6 +2107,63 @@ export type FindAllPostsQueryHookResult = ReturnType<typeof useFindAllPostsQuery
 export type FindAllPostsLazyQueryHookResult = ReturnType<typeof useFindAllPostsLazyQuery>;
 export type FindAllPostsSuspenseQueryHookResult = ReturnType<typeof useFindAllPostsSuspenseQuery>;
 export type FindAllPostsQueryResult = Apollo.QueryResult<FindAllPostsQuery, FindAllPostsQueryVariables>;
+export const FindOneByIdDocument = gql`
+    query FindOneById($id: String!) {
+  findOneById(id: $id) {
+    id
+    title
+    text
+    images
+    hidden
+    createdAt
+    updatedAt
+    isLiked
+    likes
+    commentsCount
+    isMyPost
+    user {
+      id
+      username
+      name
+      avatar
+      role
+    }
+  }
+}
+    `;
+
+/**
+ * __useFindOneByIdQuery__
+ *
+ * To run a query within a React component, call `useFindOneByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindOneByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindOneByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useFindOneByIdQuery(baseOptions: Apollo.QueryHookOptions<FindOneByIdQuery, FindOneByIdQueryVariables> & ({ variables: FindOneByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindOneByIdQuery, FindOneByIdQueryVariables>(FindOneByIdDocument, options);
+      }
+export function useFindOneByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindOneByIdQuery, FindOneByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindOneByIdQuery, FindOneByIdQueryVariables>(FindOneByIdDocument, options);
+        }
+export function useFindOneByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindOneByIdQuery, FindOneByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindOneByIdQuery, FindOneByIdQueryVariables>(FindOneByIdDocument, options);
+        }
+export type FindOneByIdQueryHookResult = ReturnType<typeof useFindOneByIdQuery>;
+export type FindOneByIdLazyQueryHookResult = ReturnType<typeof useFindOneByIdLazyQuery>;
+export type FindOneByIdSuspenseQueryHookResult = ReturnType<typeof useFindOneByIdSuspenseQuery>;
+export type FindOneByIdQueryResult = Apollo.QueryResult<FindOneByIdQuery, FindOneByIdQueryVariables>;
 export const FindAllUsersDocument = gql`
     query FindAllUsers($filter: FilterUsersInput!) {
   findAllUsers(filter: $filter) {

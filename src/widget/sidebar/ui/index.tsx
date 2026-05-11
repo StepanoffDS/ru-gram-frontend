@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { useQuery } from '@apollo/client';
 import {
+  BellIcon,
   HomeIcon,
   LogOutIcon,
   MessageSquareIcon,
@@ -16,6 +18,10 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import {
+  NOTIFICATIONS_UNREAD_COUNT_QUERY,
+  NotificationsUnreadCountData,
+} from '@/features/notifications/api/notifications.gql';
 import { CreatePost } from '@/features/post/create-post';
 import {
   useFindAllChatsByMeQuery,
@@ -55,6 +61,12 @@ export function MainSidebar() {
   const { data: meData } = useFindMeQuery({
     skip: !isAuthenticated,
   });
+  const { data: unreadNotificationsData } =
+    useQuery<NotificationsUnreadCountData>(NOTIFICATIONS_UNREAD_COUNT_QUERY, {
+      skip: !isAuthenticated,
+    });
+  const unreadNotificationsCount =
+    unreadNotificationsData?.notificationsUnreadCount.total ?? 0;
   const totalUnreadMessages = useMemo(() => {
     const list = chatsData?.findAllChatsByMe;
     if (!list?.length) return 0;
@@ -130,6 +142,25 @@ export function MainSidebar() {
                     {totalUnreadMessages > 0 && (
                       <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
                         {totalUnreadMessages > 99 ? '99+' : totalUnreadMessages}
+                      </Badge>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size='lg'
+                  asChild={true}
+                >
+                  <Link href='/notifications'>
+                    <BellIcon />
+                    {t('menu.notifications')}
+                    {unreadNotificationsCount > 0 && (
+                      <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
+                        {unreadNotificationsCount > 99
+                          ? '99+'
+                          : unreadNotificationsCount}
                       </Badge>
                     )}
                   </Link>

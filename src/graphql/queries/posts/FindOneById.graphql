@@ -1,5 +1,5 @@
-query FindAllByMe($filter: FilterPostsInput!) {
-  findAllByMe(filter: $filter) {
+query FindOneById($id: String!) {
+  findOneById(id: $id) {
     id
     title
     text
@@ -16,6 +16,7 @@ query FindAllByMe($filter: FilterPostsInput!) {
       username
       name
       avatar
+      role
     }
   }
 }

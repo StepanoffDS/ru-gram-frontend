@@ -8,6 +8,7 @@ query FindAllByMeHidden($filter: FilterPostsInput!) {
     updatedAt
     isLiked
     likes
+    commentsCount
     user {
       id
       username

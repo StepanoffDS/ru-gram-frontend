@@ -13,6 +13,10 @@
   "profile": {
     "noProfile": "Профиль не найден"
   },
+  "postPage": {
+    "title": "Пост",
+    "notFound": "Пост не найден"
+  },
   "auth": {
     "register": {
       "heading": "Регистрация",
@@ -63,10 +67,38 @@
       "profile": "Мой профиль",
       "search": "Поиск",
       "chats": "Чаты",
+      "notifications": "Уведомления",
       "settings": "Настройки",
       "other": "Другое",
       "logout": "Выйти",
       "loadingLogout": "Выход..."
+    }
+  },
+  "postComments": {
+    "toggle": "Комментарии ({count})",
+    "placeholder": "Напишите комментарий...",
+    "send": "Отправить",
+    "sending": "Отправка...",
+    "loading": "Загрузка комментариев...",
+    "empty": "Комментариев пока нет",
+    "reply": "Ответить",
+    "replyTo": "Ответ для @{username}",
+    "cancelReply": "Отмена"
+  },
+  "notificationsPage": {
+    "title": "Уведомления",
+    "loading": "Загрузка уведомлений...",
+    "empty": "Пока нет уведомлений",
+    "markAllRead": "Прочитать все",
+    "tabs": {
+      "all": "Все",
+      "unread": "Непрочитанные ({count})"
+    },
+    "items": {
+      "postLike": "{user} поставил(а) лайк вашему посту",
+      "postComment": "{user} прокомментировал(а) ваш пост",
+      "postCommentReply": "{user} ответил(а) на ваш комментарий",
+      "newMessage": "{user} отправил(а) вам сообщение"
     }
   },
   "settingsPage": {

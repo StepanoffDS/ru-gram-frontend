@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+import { MessageCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { LikePost } from '@/features/post/like-post';
 import { PostModel } from '@/graphql/generated/output';
@@ -10,6 +13,7 @@ import {
 } from '@/shared/components/ui/avatar';
 import { S3_URL } from '@/shared/constants/api.constants';
 import { useFormatTime } from '@/shared/hooks/use-format-time';
+import { Button } from '@/shared/components/ui/button';
 import { ListPost } from '@/shared/libs/types';
 import { cn } from '@/shared/libs/utils';
 import { getInitials } from '@/shared/utils/get-initials';
@@ -19,10 +23,12 @@ import { PostImage } from './post-image';
 
 interface PostProps {
   post: ListPost | PostModel;
+  showCommentsAction?: boolean;
 }
 
-export function Post({ post }: PostProps) {
+export function Post({ post, showCommentsAction = true }: PostProps) {
   const { formatTimeAgo } = useFormatTime();
+  const t = useTranslations('postComments');
   const { user } = post;
   const { isAdmin } = useAuth();
 
@@ -94,12 +100,25 @@ export function Post({ post }: PostProps) {
         )}
       </div>
 
-      <div className='flex items-center gap-4'>
+      <div className='flex flex-wrap items-start gap-3'>
         <LikePost
           postId={post.id}
           isLiked={post.isLiked}
           likes={post.likes}
         />
+        {showCommentsAction ? (
+          <Button
+            asChild
+            variant='ghost'
+            size='sm'
+            className='w-fit gap-2'
+          >
+            <Link href={`/post/${post.id}`}>
+              <MessageCircle className='size-4' />
+              {t('toggle', { count: post.commentsCount ?? 0 })}
+            </Link>
+          </Button>
+        ) : null}
       </div>
     </article>
   );

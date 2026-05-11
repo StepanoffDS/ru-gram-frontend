@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import {
+  BellIcon,
   HomeIcon,
   LogOutIcon,
   MessageSquareIcon,
@@ -18,11 +19,16 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import {
+  NOTIFICATIONS_UNREAD_COUNT_QUERY,
+  NotificationsUnreadCountData,
+} from '@/features/notifications/api/notifications.gql';
 import { CreatePost } from '@/features/post/create-post';
 import {
   useFindAllChatsByMeQuery,
   useLogoutUserMutation,
 } from '@/graphql/generated/output';
+import { useQuery } from '@apollo/client';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -49,6 +55,12 @@ export function MobileBottomNavigation({
   const { data: chatsData } = useFindAllChatsByMeQuery({
     skip: !isAuthenticated,
   });
+  const { data: unreadNotificationsData } =
+    useQuery<NotificationsUnreadCountData>(NOTIFICATIONS_UNREAD_COUNT_QUERY, {
+      skip: !isAuthenticated,
+    });
+  const unreadNotificationsCount =
+    unreadNotificationsData?.notificationsUnreadCount.total ?? 0;
   const totalUnreadMessages = useMemo(() => {
     const list = chatsData?.findAllChatsByMe;
     if (!list?.length) return 0;
@@ -173,6 +185,19 @@ export function MobileBottomNavigation({
                 <Link href='/settings'>
                   <SettingsIcon className='mr-2 h-4 w-4' />
                   {t('menu.settings')}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href='/notifications'>
+                  <BellIcon className='mr-2 h-4 w-4' />
+                  {t('menu.notifications')}
+                  {unreadNotificationsCount > 0 && (
+                    <Badge className='ml-auto min-w-5 justify-center px-1 py-0.5 text-[11px]'>
+                      {unreadNotificationsCount > 99
+                        ? '99+'
+                        : unreadNotificationsCount}
+                    </Badge>
+                  )}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem

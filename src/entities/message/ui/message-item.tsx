@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useTranslations } from 'next-intl';
@@ -244,7 +245,9 @@ export function MessageItem({
               src={user.avatar ? S3_URL + user.avatar : undefined}
               alt={displayName}
             />
-            <AvatarFallback>{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Link>
         <div
