@@ -98,6 +98,7 @@
       "postLike": "{user} поставил(а) лайк вашему посту",
       "postComment": "{user} прокомментировал(а) ваш пост",
       "postCommentReply": "{user} ответил(а) на ваш комментарий",
+      "newFollower": "{user} подписался(ась) на вас",
       "newMessage": "{user} отправил(а) вам сообщение"
     }
   },
@@ -126,6 +127,7 @@
     "unknownBlocker": "неизвестно",
     "lastBlockedBy": "Последний блок: {blocker}",
     "adminBlockedHint": "Сначала разблокируйте администратора, затем снимите роль.",
+    "superAdminProtectedHint": "Роль суперадминистратора нельзя снять в этом разделе.",
     "tabs": {
       "activeUsers": "Пользователи",
       "blockedUsers": "Заблокированные",

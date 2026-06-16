@@ -105,6 +105,7 @@ export type AppNotificationType =
   | 'POST_LIKE'
   | 'POST_COMMENT'
   | 'POST_COMMENT_REPLY'
+  | 'NEW_FOLLOWER'
   | 'NEW_MESSAGE';
 
 export type AppNotification = {

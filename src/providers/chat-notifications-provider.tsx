@@ -105,6 +105,21 @@ export function ChatNotificationsProvider({
           return;
         }
 
+        if (notification.type === 'NEW_FOLLOWER') {
+          const actorUsername = notification.actor?.username;
+
+          toast(`Новая подписка от @${actor}`, {
+            action: actorUsername
+              ? {
+                  label: 'Открыть',
+                  onClick: () => router.push(`/profile/${actorUsername}`),
+                }
+              : undefined,
+          });
+
+          return;
+        }
+
         toast(`Новый лайк от @${actor}`, {
           action: {
             label: 'Открыть',

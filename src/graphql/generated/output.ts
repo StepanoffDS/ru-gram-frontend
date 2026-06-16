@@ -15,7 +15,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
 };
 
@@ -105,6 +104,7 @@ export type FilterPostsInput = {
 export type FilterUsersInput = {
   isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
   role?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<Scalars['String']['input']>>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -340,6 +340,7 @@ export type NotificationModel = {
 };
 
 export enum NotificationType {
+  NewFollower = 'NEW_FOLLOWER',
   NewMessage = 'NEW_MESSAGE',
   PostComment = 'POST_COMMENT',
   PostCommentReply = 'POST_COMMENT_REPLY',
