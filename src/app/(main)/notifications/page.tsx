@@ -98,6 +98,11 @@ export default function NotificationsPage() {
       return;
     }
 
+    if (notification.type === 'NEW_FOLLOWER' && notification.actor?.username) {
+      router.push(`/profile/${notification.actor.username}`);
+      return;
+    }
+
     if (notification.postId) {
       const commentQuery = notification.comment?.id
         ? `?commentId=${notification.comment.id}`
@@ -216,6 +221,10 @@ function getNotificationText(
 
   if (notification.type === 'POST_COMMENT_REPLY') {
     return t('items.postCommentReply', { user: actorName });
+  }
+
+  if (notification.type === 'NEW_FOLLOWER') {
+    return t('items.newFollower', { user: actorName });
   }
 
   return t('items.newMessage', { user: actorName });

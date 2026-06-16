@@ -98,6 +98,7 @@
       "postLike": "{user} liked your post",
       "postComment": "{user} commented on your post",
       "postCommentReply": "{user} replied to your comment",
+      "newFollower": "{user} subscribed to you",
       "newMessage": "{user} sent you a message"
     }
   },
@@ -126,6 +127,7 @@
     "unknownBlocker": "unknown",
     "lastBlockedBy": "Last blocked by: {blocker}",
     "adminBlockedHint": "Unblock the admin first, then remove the role.",
+    "superAdminProtectedHint": "The super admin role cannot be removed here.",
     "tabs": {
       "activeUsers": "Users",
       "blockedUsers": "Blocked",

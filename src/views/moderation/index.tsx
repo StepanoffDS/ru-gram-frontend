@@ -10,6 +10,7 @@ import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
 import { Role } from '@/features/auth/types';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -24,6 +25,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shared/components/ui/tabs';
+import {
+  getRoleBadgeClassName,
+  getRoleBadgeNameVariant,
+  getRoleBadgeVariant,
+  shouldShowRoleBadge,
+} from '@/shared/utils/role';
 
 const FIND_ME_FOR_MODERATION = gql`
   query FindMeForModeration {
@@ -107,6 +114,7 @@ type UsersListProps = {
   filter: {
     isBlocked?: boolean;
     role?: string;
+    roles?: string[];
   };
   refreshIndex: number;
   actionLabel: string;
@@ -214,7 +222,17 @@ function ModerationUsersList({
           <Card key={user.id}>
             <CardContent className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
               <div className='space-y-1'>
-                <p className='font-medium'>{displayName}</p>
+                <div className='flex flex-wrap items-center gap-2'>
+                  <p className='font-medium'>{displayName}</p>
+                  {shouldShowRoleBadge(user.role) ? (
+                    <Badge
+                      variant={getRoleBadgeVariant(user.role)}
+                      className={`shrink-0 text-[10px] tracking-wide uppercase ${getRoleBadgeClassName(user.role)}`}
+                    >
+                      {getRoleBadgeNameVariant(user.role)}
+                    </Badge>
+                  ) : null}
+                </div>
                 <p className='text-muted-foreground text-sm'>
                   @{user.username}
                 </p>
@@ -398,16 +416,23 @@ export function ModerationView() {
         {isSuperAdmin ? (
           <TabsContent value='admins'>
             <ModerationUsersList
-              filter={{ role: Role.ADMIN }}
+              filter={{ roles: [Role.ADMIN, Role.SUPER_ADMIN] }}
               refreshIndex={refreshIndex}
               actionLabel={
                 isChangingRole ? t('actions.loading') : t('actions.removeAdmin')
               }
-              actionDisabled={(user) => isChangingRole || user.isBlocked}
+              actionDisabled={(user) =>
+                isChangingRole ||
+                user.isBlocked ||
+                user.role === Role.SUPER_ADMIN
+              }
               emptyText={t('empty.admins')}
               loadingText={t('loadingUsers')}
               onAction={handleRemoveAdmin}
               footerText={(user) => {
+                if (user.role === Role.SUPER_ADMIN) {
+                  return t('superAdminProtectedHint');
+                }
                 if (user.isBlocked) return t('adminBlockedHint');
                 return null;
               }}
