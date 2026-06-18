@@ -30,7 +30,7 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
   const [posts, setPosts] = useState<ListPost[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [currentSkip, setCurrentSkip] = useState(0);
-  console.log('isSuperAdmin', isSuperAdmin);
+
   const {
     data: profileData,
     loading: profileLoading,
@@ -101,7 +101,7 @@ export function ProfilePageComponent({ username }: ProfilePageComponentProps) {
   }
 
   const viewed = profileData?.findOneByUsername;
-  console.log('viewed', viewed);
+
   return (
     <div className='flex flex-col gap-4'>
       <ProfileInfo
